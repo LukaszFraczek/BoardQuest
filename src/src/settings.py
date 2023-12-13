@@ -46,6 +46,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'users',
+    'homepage',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
@@ -139,3 +140,10 @@ STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Overwrite default Django login and redirect URLs
+
+LOGIN_REDIRECT_URL = 'homepage'
+
+LOGIN_URL = 'user_login'
