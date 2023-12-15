@@ -50,11 +50,10 @@
             </li>
         {% else %}
             <li class="nav-item mx-1">
-                <a href="{% url 'user-login' %}" class="btn btn-primary btn-user btn-block">
+                <a href="{% url 'user-login' %}" class="btn btn-primary btn-user btn-rounded">
                     Login
                 </a>
             </li>
-
             <li class="nav-item mx-1">
                 <a href="{% url 'user-register' %}" class="btn btn-primary btn-user btn-block">
                     Register
@@ -65,6 +64,9 @@
 
 
 </nav>
+
+
+{% if user.is_authenticated %}
 
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -79,8 +81,13 @@
             <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="{% url 'user-login' %}">Logout</a>
+                <form id="logout-form" method="post" action="{% url 'user-logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Logout</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+{% endif %}

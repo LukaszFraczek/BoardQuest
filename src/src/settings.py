@@ -49,7 +49,10 @@ PROJECT_APPS = [
     'homepage',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
+OTHER_APPS = [
+]
+
+INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + OTHER_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -146,4 +149,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'homepage'
 
-LOGIN_URL = 'user_login'
+LOGIN_URL = 'user-login'
+
+LOGOUT_REDIRECT_URL = 'homepage'
