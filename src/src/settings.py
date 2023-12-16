@@ -35,7 +35,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+PROJECT_APPS = [
+    'users',
+    'homepage',
+]
+
+OTHER_APPS = [
+]
+
+INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + OTHER_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -133,3 +143,12 @@ STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Overwrite default Django login and redirect URLs
+
+LOGIN_REDIRECT_URL = 'homepage'
+
+LOGIN_URL = 'user-login'
+
+LOGOUT_REDIRECT_URL = 'homepage'
