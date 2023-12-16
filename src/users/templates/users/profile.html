@@ -1,0 +1,113 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}
+    Profile
+{% endblock title %}
+
+{% block page_heading %}
+    Profile
+{% endblock page_heading %}
+
+{% block content %}
+<!-- Basic Card Example -->
+<div class="col-lg-12">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+
+            <!-- Profile Info row -->
+            <div class="row align-items-stretch mb-4">
+                <div class="col-lg-8">
+                    <!-- Profile Info -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Image -->
+                                <div class="col-lg-3 col-md-3 col-sm-4">
+                                    <img class="img-profile rounded-circle img-fluid" src="{{ user.profile.image.url|default:'/media/profile_pics/default.jpg' }}">
+                                </div>
+                                <!-- Name & about -->
+                                <div class="col-lg-9 col-md-9 col-sm-8">
+                                    <div class="row ">
+                                        <h3 class="m-0 font-weight-bold text-primary">{{ user.username }}</h3>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="row">
+                                        <p class="mb-4">{{ user.profile.about_me }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <!-- Profile Links -->
+                    <div class="card h-100">
+                        <div class="card-body">
+                            Supplementary links for this profile
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of row -->
+
+            <!-- Achievements and Friends row -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Achievements -->
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Achievements</h6>
+                        </div>
+                        <div class="card-body">
+                            Achievements go here
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Activity </h6>
+                        </div>
+                        <div class="card-body">
+                            This is a place for some recent activity - game sessions or sth like that.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Friends -->
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Friends</h6>
+                        </div>
+                        <div class="card-body">
+                            <!-- Friend row TODO: Show some friends -->
+                            <div class="row">
+                                <div class="col-lg-3 col-ms-3 col-sm-3">
+                                    <img class="img-profile rounded-circle img-fluid" src="{{ '/media/profile_pics/default.jpg' }}"> <!-- TODO: placeholder pic -->
+                                </div>
+                                <div class="col-lg-9 col-ms-9 col-sm-9">
+                                    <p class="text-lg mb-0">{{ user.username }}</p> <!-- TODO: placeholder name -->
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-lg-3 col-ms-3 col-sm-3">
+                                    <img class="img-profile rounded-circle img-fluid" src="{{ '/media/profile_pics/default.jpg' }}"> <!-- TODO: placeholder pic -->
+                                </div>
+                                <div class="col-lg-9 col-ms-9 col-sm-9">
+                                    <p class="text-lg mb-0">{{ user.username }}</p> <!-- TODO: placeholder name -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of row -->
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
