@@ -16,7 +16,7 @@ def user_pic_location(instance, filename):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     about_me = models.TextField(null=True)
-    image = models.ImageField(default='profile_pics/default.jpg', upload_to=user_pic_location)
+    image = models.ImageField(upload_to=user_pic_location)
 
     def save(self, *args, **kwargs):  # if profile picture too big, reduce size during save
         super().save(*args, **kwargs)
