@@ -1,10 +1,12 @@
-from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, TemplateView
 
 from .forms import UserLoginForm, UserRegisterForm
+from .models import Profile
 
 
 class UserRegisterView(SuccessMessageMixin, CreateView):
@@ -12,6 +14,14 @@ class UserRegisterView(SuccessMessageMixin, CreateView):
     form_class = UserRegisterForm
     success_url = reverse_lazy('user-login')
     success_message = "Welcome, %(username)s. You have successfully signed up!"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Create a profile for new user
+        Profile.objects.create(user=self.object)
+
+        return response
 
 
 class UserLoginView(LoginView):
@@ -27,4 +37,14 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LogoutView):
     pass
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    model = Profile
+    template_name = 'users/profile.html'
+
+
+class SettingsView(LoginRequiredMixin, TemplateView):  # TODO
+    pass
+
 
