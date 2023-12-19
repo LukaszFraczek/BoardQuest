@@ -3,9 +3,9 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView, UpdateView
 
-from .forms import UserLoginForm, UserRegisterForm
+from .forms import UserLoginForm, UserRegisterForm, ProfileUpdateForm, UserUsernameUpdateForm
 from .models import Profile
 
 
@@ -44,7 +44,13 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'users/profile.html'
 
 
-class SettingsView(LoginRequiredMixin, TemplateView):  # TODO
-    pass
+class SettingsView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    template_name = 'users/settings.html'
+    form_class = ProfileUpdateForm
+    success_url = reverse_lazy('user-settings')
+
+    def get_object(self, queryset=None):
+        return self.request.user.profile
 
 
