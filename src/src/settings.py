@@ -50,6 +50,7 @@ PROJECT_APPS = [
 ]
 
 OTHER_APPS = [
+    'django_cleanup',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + OTHER_APPS
