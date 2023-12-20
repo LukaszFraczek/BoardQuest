@@ -1,5 +1,11 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, User
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    UserCreationForm,
+    UserChangeForm,
+    PasswordChangeForm,
+    User,
+)
 from django.core.exceptions import ValidationError
 
 from .models import Profile
@@ -147,3 +153,31 @@ class UserEmailUpdateForm(UserChangeForm):
             raise ValidationError("Provided emails do not match each other.")
 
         return cleaned_data
+
+
+class UserPasswordUpdateForm(PasswordChangeForm):
+    template_name = "users/forms/generic.html"
+
+    field_order = ["new_password1", "new_password2", "old_password"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        new_password_widget = forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "class": "form-control",
+                "type": "password",
+            }
+        )
+        old_password_widget = forms.PasswordInput(
+            attrs={
+                "autocomplete": "current-password",
+                "autofocus": True,
+                "class": "form-control",
+                "type": "password",
+            }
+        )
+        self.fields['new_password1'].widget = new_password_widget
+        self.fields['new_password2'].widget = new_password_widget
+        self.fields['old_password'].widget = old_password_widget

@@ -8,6 +8,7 @@ from .views import (
     SettingsView,
     ChangeUsernameView,
     ChangeEmailView,
+    ChangePasswordView,
 )
 
 
@@ -19,5 +20,5 @@ urlpatterns = [
     path('settings/', SettingsView.as_view(), name='user-settings'),
     path('settings/username/', ChangeUsernameView.as_view(), name='settings-username'),
     path('settings/email/', ChangeEmailView.as_view(), name='settings-email'),
-    path('settings/password/', SettingsView.as_view(), name='settings-password'),
+    path('settings/password/', ChangePasswordView.as_view(), name='settings-password'),
 ]

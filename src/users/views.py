@@ -3,7 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.forms import User
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
@@ -15,6 +15,7 @@ from .forms import (
     ProfileUpdateForm,
     UserUsernameUpdateForm,
     UserEmailUpdateForm,
+    UserPasswordUpdateForm,
 )
 
 
@@ -132,3 +133,19 @@ class ChangeEmailView(LoginRequiredMixin, UpdateView):
 
         messages.success(self.request, 'Email successfully changed!')
         return redirect(self.get_success_url())
+
+
+class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
+    model = User
+    template_name = 'users/settings/password.html'
+    form_class = UserPasswordUpdateForm
+    success_url = reverse_lazy('user-login')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_form_kwargs(self):
+        # Sending user object to the form
+        kwargs = super(ChangePasswordView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
