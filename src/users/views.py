@@ -64,7 +64,7 @@ class SettingsView(LoginRequiredMixin, UpdateView):
         return self.request.user.profile
 
 
-class ChangeUsernameView(LoginRequiredMixin, UpdateView):
+class SettingsUsernameView(LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'users/settings/username.html'
     form_class = UserUsernameUpdateForm
@@ -72,7 +72,7 @@ class ChangeUsernameView(LoginRequiredMixin, UpdateView):
 
     def get_form_kwargs(self):
         # Sending user object to the form
-        kwargs = super(ChangeUsernameView, self).get_form_kwargs()
+        kwargs = super(SettingsUsernameView, self).get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
 
@@ -112,7 +112,7 @@ class ChangeUsernameView(LoginRequiredMixin, UpdateView):
         return redirect(self.get_success_url())
 
 
-class ChangeEmailView(LoginRequiredMixin, UpdateView):
+class SettingsEmailView(LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'users/settings/email.html'
     form_class = UserEmailUpdateForm
@@ -120,7 +120,7 @@ class ChangeEmailView(LoginRequiredMixin, UpdateView):
 
     def get_form_kwargs(self):
         # Sending user object to the form
-        kwargs = super(ChangeEmailView, self).get_form_kwargs()
+        kwargs = super(SettingsEmailView, self).get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
 
@@ -135,7 +135,7 @@ class ChangeEmailView(LoginRequiredMixin, UpdateView):
         return redirect(self.get_success_url())
 
 
-class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
+class SettingsPasswordView(LoginRequiredMixin, PasswordChangeView):
     model = User
     template_name = 'users/settings/password.html'
     form_class = UserPasswordUpdateForm
@@ -146,6 +146,6 @@ class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
 
     def get_form_kwargs(self):
         # Sending user object to the form
-        kwargs = super(ChangePasswordView, self).get_form_kwargs()
+        kwargs = super(SettingsPasswordView, self).get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
