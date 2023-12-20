@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, User
-from django.contrib.auth.hashers import check_password
+from django.core.exceptions import ValidationError
 
 from .models import Profile
+from .form_validation import PasswordField
 
 
 class UserLoginForm(AuthenticationForm):
@@ -21,28 +22,17 @@ class UserRegisterForm(UserCreationForm):
         }
 
 
-# -------------- BAJZEL --------------
+class ProfileUpdateForm(forms.ModelForm):
 
-from django.core.exceptions import ValidationError
-
-
-def validate_password(password, user_password):
-    if not check_password(password, user_password):
-        raise ValidationError(
-            "Incorrect password. Please try again.", code="invalid", params={"value": password}
-        )
-
-
-class PasswordField(forms.CharField):
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(PasswordField, self).__init__(*args, **kwargs)
-
-    def validate(self, value):
-        super().validate(value)
-        validate_password(value, self.user.password)
-
-# -------------- BAJZEL --------------
+    class Meta:
+        model = Profile
+        fields = ['image', 'about_me']
+        widgets = {
+            'image': forms.FileInput,
+            'about_me': forms.Textarea(attrs={
+                "class": "form-control",
+                'placeholder': 'Say something about yourself! :)'}),
+        }
 
 
 class UserUsernameUpdateForm(UserChangeForm):
@@ -102,9 +92,6 @@ class UserUsernameUpdateForm(UserChangeForm):
         return cleaned_data
 
 
-
-
-
 class UserEmailUpdateForm(forms.ModelForm):
     email = forms.EmailField()
 
@@ -113,14 +100,3 @@ class UserEmailUpdateForm(forms.ModelForm):
         fields = ['email']
 
 
-class ProfileUpdateForm(forms.ModelForm):
-
-    class Meta:
-        model = Profile
-        fields = ['image', 'about_me']
-        widgets = {
-            'image': forms.FileInput,
-            'about_me': forms.Textarea(attrs={
-                "class": "form-control",
-                'placeholder': 'Say something about yourself! :)'}),
-        }
