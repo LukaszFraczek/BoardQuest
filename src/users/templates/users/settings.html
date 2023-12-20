@@ -1,0 +1,138 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}
+    Settings
+{% endblock title %}
+
+{% block page_heading %}
+    Settings
+{% endblock page_heading %}
+
+{% block content %}
+<div class="col-lg-12">
+
+
+    <!-- Account Settings card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Account Settings</h6>
+        </div>
+        <div class="card-body">
+
+            <!-- Change username -->
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        USERNAME</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ user.username }}</div>
+                </div>
+                <div class="col-auto">
+                    <a href="{% url 'change-username' %}" class="btn btn-light btn-icon-split">
+                        <span class="icon text-gray-600">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                        <span class="text">Change username</span>
+                    </a>
+                </div>
+            </div>
+            <hr/>
+
+            <!-- Change email -->
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        EMAIL</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ user.email }}</div>
+                </div>
+                <div class="col-auto">
+                    <a href="{% url 'change-email' %}" class="btn btn-light btn-icon-split">
+                        <span class="icon text-gray-600">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                        <span class="text">Change email</span>
+                    </a>
+                </div>
+            </div>
+            <hr/>
+
+            <!-- Change password -->
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        PASSWORD</div>
+                </div>
+                <div class="col-auto">
+                    <a href="{% url 'change-password' %}" class="btn btn-light btn-icon-split">
+                        <span class="icon text-gray-600">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                        <span class="text">Change password</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Profile Settings card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Profile Settings</h6>
+        </div>
+        <div class="card-body">
+
+            <!-- Change profile pic -->
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            PROFILE PICTURE</div>
+                        <!-- Image -->
+                        <div class="col-lg-3 col-md-3 col-sm-4">
+                            <img class="img-profile rounded-circle img-fluid" src="{{ user.profile.image.url|default:'/media/profile_pics/default.jpg' }}">
+                        </div>
+                    </div>
+                    <input type="file" name="image">
+                </div>
+            <hr/>
+
+            <!-- Change profile description -->
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            PROFILE DESCRIPTION</div>
+                        <!-- Description -->
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <textarea name="about_me" class="form-control">{{ user.profile.about_me|default:'Say something about yourself! :)' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            <hr/>
+
+            <!-- save profile changes button -->
+            <div class="row no-gutters align-items-right">
+                <div class="col mr-2">
+                </div>
+                <div class="col-auto">
+                    <div class="form-group">
+                        <button type="submit" value="Update" class="btn btn-light btn-icon-split">
+                            <span class="icon text-gray-600">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
+                            <span class="text">Save changes</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content %}
