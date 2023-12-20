@@ -46,7 +46,7 @@ class UserUsernameUpdateForm(UserChangeForm):
 
     username_confirm = forms.CharField(
         widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
-        label="Confirm username",
+        label="New username confirmation",
         required=True,
     )
     password_confirm = PasswordField(
@@ -62,7 +62,7 @@ class UserUsernameUpdateForm(UserChangeForm):
         model = User
         fields = ['username']
         labels = {
-            "username": "Username",
+            "username": "New username",
         }
         widgets = {
             "username": forms.TextInput(attrs={"class": "form-control", "type": "text"}),
@@ -103,7 +103,7 @@ class UserEmailUpdateForm(UserChangeForm):
 
     email_confirm = forms.EmailField(
         widget=forms.EmailInput(attrs={"class": "form-control", "type": "email"}),
-        label="Confirm email",
+        label="New email confirmation",
         required=True,
     )
     password_confirm = PasswordField(
@@ -119,7 +119,7 @@ class UserEmailUpdateForm(UserChangeForm):
         model = User
         fields = ['email']
         labels = {
-            "email": "Email",
+            "email": "New email",
         }
         widgets = {
             "email": forms.EmailInput(attrs={"class": "form-control", "type": "email"}),
