@@ -119,8 +119,13 @@ class UserEmailUpdateForm(forms.ModelForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-    image = forms.ImageField(widget=forms.FileInput)
 
     class Meta:
         model = Profile
         fields = ['image', 'about_me']
+        widgets = {
+            'image': forms.FileInput,
+            'about_me': forms.Textarea(attrs={
+                "class": "form-control",
+                'placeholder': 'Say something about yourself! :)'}),
+        }

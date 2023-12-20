@@ -82,41 +82,34 @@
         </div>
         <div class="card-body">
 
-            <!-- Change profile pic -->
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                <div class="row no-gutters">
+                    <!-- profile pic -->
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-4">
                             PROFILE PICTURE</div>
                         <!-- Image -->
-                        <div class="col-lg-3 col-md-3 col-sm-4">
+                        <div class="align-items-center col-md-10 col-sm-10 mb-4">
                             <img class="img-profile rounded-circle img-fluid" src="{{ user.profile.image.url|default:'/media/profile_pics/default.jpg' }}">
                         </div>
+                        {{ form.image }}
                     </div>
-                    <input type="file" name="image">
-                </div>
-            <hr/>
-
-            <!-- Change profile description -->
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    <!-- profile description -->
+                    <div class="col-lg-9 col-md-8 col-sm-6">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-4">
                             PROFILE DESCRIPTION</div>
                         <!-- Description -->
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            <textarea name="about_me" class="form-control">{{ user.profile.about_me|default:'Say something about yourself! :)' }}</textarea>
-                        </div>
+                        {{ form.about_me }}
                     </div>
                 </div>
-            <hr/>
+                <hr/>
 
-            <!-- save profile changes button -->
-            <div class="row no-gutters align-items-right">
-                <div class="col mr-2">
-                </div>
-                <div class="col-auto">
-                    <div class="form-group">
+                <!-- save profile changes button -->
+                <div class="row no-gutters align-items-right">
+                    <div class="col mr-2">
+                    </div>
+                    <div class="col-auto form-group">
                         <button type="submit" value="Update" class="btn btn-light btn-icon-split">
                             <span class="icon text-gray-600">
                                 <i class="fas fa-arrow-right"></i>
@@ -125,9 +118,9 @@
                         </button>
                     </div>
                 </div>
-            </div>
 
             </form>
+
 
         </div>
     </div>
