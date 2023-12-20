@@ -92,11 +92,58 @@ class UserUsernameUpdateForm(UserChangeForm):
         return cleaned_data
 
 
-class UserEmailUpdateForm(forms.ModelForm):
-    email = forms.EmailField()
+class UserEmailUpdateForm(UserChangeForm):
+    template_name = "users/forms/generic.html"
+
+    email_confirm = forms.EmailField(
+        widget=forms.EmailInput(attrs={"class": "form-control", "type": "email"}),
+        label="Confirm email",
+        required=True,
+    )
+    password_confirm = PasswordField(
+        widget=forms.PasswordInput(attrs={"class": "form-control", "type": "password"}),
+        label="Password",
+        required=True,
+    )
+    password = None
+
+    field_order = ['email', 'email_confirm', 'password_confirm']
 
     class Meta:
         model = User
         fields = ['email']
+        labels = {
+            "email": "Email",
+        }
+        widgets = {
+            "email": forms.EmailInput(attrs={"class": "form-control", "type": "email"}),
+        }
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(UserEmailUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['password_confirm'].user = self.user  # MAKE BETTER
 
+    def clean_email(self):
+        new_email = self.cleaned_data.get('email')
+
+        # Check if entered email is unique (case INSENSITIVE!)
+        if User.objects.filter(email__iexact=new_email).exclude(pk=self.user.pk).exists():
+            raise ValidationError("Provided email already in use!")
+
+        # Check if entered username is users' current username (case INSENSITIVE!)
+        if new_email.upper() == self.user.email.upper():
+            raise ValidationError("You already have this email!")
+
+        return new_email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_email = cleaned_data.get('email')
+        new_email_conf = cleaned_data.get('email_confirm')
+
+        # Check if entered usernames are the same
+        if new_email != new_email_conf:
+            raise ValidationError("Provided emails do not match each other.")
+
+        return cleaned_data

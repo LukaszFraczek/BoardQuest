@@ -8,8 +8,14 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
 
-from .forms import UserLoginForm, UserRegisterForm, ProfileUpdateForm, UserUsernameUpdateForm
 from .models import Profile
+from .forms import (
+    UserLoginForm,
+    UserRegisterForm,
+    ProfileUpdateForm,
+    UserUsernameUpdateForm,
+    UserEmailUpdateForm,
+)
 
 
 class UserRegisterView(SuccessMessageMixin, CreateView):
@@ -59,12 +65,12 @@ class SettingsView(LoginRequiredMixin, UpdateView):
 
 class ChangeUsernameView(LoginRequiredMixin, UpdateView):
     model = User
-    template_name = 'users/settings-username.html'
+    template_name = 'users/settings/username.html'
     form_class = UserUsernameUpdateForm
     success_url = reverse_lazy('user-settings')
 
-    # Sending user object to the form, to verify which fields to display/remove (depending on group)
     def get_form_kwargs(self):
+        # Sending user object to the form
         kwargs = super(ChangeUsernameView, self).get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
@@ -102,4 +108,27 @@ class ChangeUsernameView(LoginRequiredMixin, UpdateView):
         self.object.save(update_fields=['username'])
 
         messages.success(self.request, 'Username successfully changed!')
+        return redirect(self.get_success_url())
+
+
+class ChangeEmailView(LoginRequiredMixin, UpdateView):
+    model = User
+    template_name = 'users/settings/email.html'
+    form_class = UserEmailUpdateForm
+    success_url = reverse_lazy('user-settings')
+
+    def get_form_kwargs(self):
+        # Sending user object to the form
+        kwargs = super(ChangeEmailView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        # Update email
+        self.object.save(update_fields=['email'])
+
+        messages.success(self.request, 'Email successfully changed!')
         return redirect(self.get_success_url())
