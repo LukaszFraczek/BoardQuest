@@ -149,3 +149,7 @@ class SettingsPasswordView(LoginRequiredMixin, PasswordChangeView):
         kwargs = super(SettingsPasswordView, self).get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Password successfully changed!')
+        return super().form_valid(form)
