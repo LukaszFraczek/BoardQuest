@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 from PIL import Image
 
@@ -15,12 +15,13 @@ def user_pic_location(instance, filename):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    about_me = models.TextField(null=True)
-    image = models.ImageField(upload_to=user_pic_location)
+    about_me = models.TextField(null=True, blank=True)
+    image = models.ImageField(default='profile_pics/default.jpg', upload_to=user_pic_location, blank=True)
 
-    def save(self, *args, **kwargs):  # if profile picture too big, reduce size during save
+    def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+        # if profile picture too big, reduce size during save
         img = Image.open(self.image.path)
 
         if img.height > MAX_IMG_HEIGHT or img.width > MAX_IMG_WIDTH:
