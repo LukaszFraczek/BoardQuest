@@ -14,6 +14,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('users.urls')),
     path('', include('homepage.urls')),
+    path('friends/', include('friends.urls')),
 ]
 
 handler404 = 'homepage.views.handling_404'
