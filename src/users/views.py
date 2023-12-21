@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
 
 from .models import Profile
+from friends.models import FriendList
 from .forms import (
     UserLoginForm,
     UserRegisterForm,
@@ -28,8 +29,9 @@ class UserRegisterView(SuccessMessageMixin, CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
 
-        # Create a profile for new user
+        # Create a profile & friend list for new user
         Profile.objects.create(user=self.object)
+        FriendList.objects.create(user=self.object)
 
         return response
 
