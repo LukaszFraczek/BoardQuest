@@ -14,6 +14,8 @@ def user_pic_location(instance, filename):
 
 
 class Profile(models.Model):
+    """Model representing user profile"""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     about_me = models.TextField(null=True, blank=True)
     image = models.ImageField(default='profile_pics/default.jpg', upload_to=user_pic_location, blank=True)
