@@ -40,7 +40,6 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        {% include 'layout/sidebar.html' %}
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -65,19 +64,22 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+                    <div class="card shadow mb-4 col-lg-10 mx-auto">
+                        <div class="card-body">
+                            <!-- Page Heading -->
+                            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                                <h1 class="h3 mb-0 text-gray-800">
+                                    {% block page_heading %}
+                                    {% endblock page_heading %}
+                                </h1>
+                            </div>
 
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">
-                            {% block page_heading %}
-                            {% endblock page_heading %}
-                        </h1>
-                    </div>
-
-                    <!-- Content Row -->
-                    <div class="row">
-                        {% block content %}
-                        {% endblock content %}
+                            <!-- Content Row -->
+                            <div class="row">
+                                {% block content %}
+                                {% endblock content %}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- End of Page Content -->
