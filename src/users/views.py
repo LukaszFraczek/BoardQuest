@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.forms import User
-from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.shortcuts import redirect
@@ -42,7 +41,6 @@ class UserLoginView(LoginView):
     success_url = reverse_lazy('homepage')
 
     def form_invalid(self, form):
-        # logic for a failed login
         messages.warning(self.request, 'Invalid username or password. Please try again.')
         return super().form_invalid(form)
 
@@ -82,31 +80,6 @@ class SettingsUsernameView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
     def form_valid(self, form):
-        # Get data from the form
-        new_username = form.cleaned_data.get('username')
-        new_username_conf = form.cleaned_data.get('username_confirm')
-        password_conf = form.cleaned_data.get('password_confirm')
-
-        # # Check if entered password is correct
-        # if not check_password(password_conf, self.request.user.password):
-        #     form.add_error('password_confirm', 'Incorrect password. Please try again.')
-        #     return self.form_invalid(form)
-
-        # # Check if entered usernames are the same
-        # if new_username != new_username_conf:
-        #     form.add_error('username', 'Usernames do not match each other.')
-        #     return self.form_invalid(form)
-
-        # # Check if entered username is unique
-        # if User.objects.filter(username=new_username).exclude(pk=self.request.user.pk).exists():
-        #     form.add_error('username', 'Username taken. Please choose a different one.')
-        #     return self.form_invalid(form)
-        #
-        # # Check if entered username is users' current username
-        # if new_username == self.request.user.username:
-        #     form.add_error('username', 'Username taken. Please choose a different one.')
-        #     return self.form_invalid(form)
-
         # Update username
         self.object.save(update_fields=['username'])
 
