@@ -24,16 +24,16 @@
                             <div class="row">
                                 <!-- Image -->
                                 <div class="col-lg-3 col-md-3 col-sm-4">
-                                    <img class="img-profile rounded-circle img-fluid" src="{{ user.profile.image.url|default:'/media/profile_pics/default.jpg' }}">
+                                    <img class="img-profile rounded-circle img-fluid" src="{{ object.image.url }}">
                                 </div>
                                 <!-- Name & about -->
                                 <div class="col-lg-9 col-md-9 col-sm-8">
                                     <div class="row ">
-                                        <h3 class="m-0 font-weight-bold text-primary">{{ user.username }}</h3>
+                                        <h3 class="m-0 font-weight-bold text-primary">{{ object.user.username }}</h3>
                                     </div>
                                     <hr class="my-2">
                                     <div class="row">
-                                        <p class="mb-4">{{ user.profile.about_me }}</p>
+                                        <p class="mb-4">{{ object.about_me }}</p>
                                     </div>
                                 </div>
                             </div>

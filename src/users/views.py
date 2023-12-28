@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView
 
 from .models import Profile
 from friends.models import FriendList
@@ -49,7 +49,7 @@ class UserLogoutView(LogoutView):
     pass
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
+class ProfileView(DetailView):
     model = Profile
     template_name = 'users/profile.html'
 
