@@ -6,6 +6,7 @@
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                     Friends
@@ -28,7 +29,6 @@
                     <a class="dropdown-item" href="{% url 'homepage' %}">New session</a>  <!-- TODO -->
                 </div>
             </li>
-            {% if user.is_authenticated %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                     Account
