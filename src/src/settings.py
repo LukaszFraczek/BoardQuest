@@ -46,6 +46,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'users',
+    'users_settings',
     'homepage',
     'friends',
 ]
