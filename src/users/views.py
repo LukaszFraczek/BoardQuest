@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -5,7 +6,6 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
 
 from .models import Profile
-from friends.models import FriendList
 from .forms import (
     UserLoginForm,
     UserRegisterForm,
@@ -34,5 +34,8 @@ class UserLogoutView(LogoutView):
 
 
 class ProfileView(DetailView):
-    model = Profile
     template_name = 'users/profile.html'
+    model = Profile
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Profile, user=self.kwargs['pk'])
