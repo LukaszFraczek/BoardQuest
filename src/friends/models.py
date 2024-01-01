@@ -9,18 +9,18 @@ class FriendList(models.Model):
     """Model representing a list of users' friends"""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    friend_list = models.ManyToManyField(User, blank=True, related_name="friend_list")
+    friends = models.ManyToManyField(User, blank=True, related_name="friends")
 
     def __str__(self):
         return f"{self.user} friendlist"
 
     def add(self, user):
-        if user not in self.friend_list.all():
-            self.friend_list.add(user)
+        if user not in self.friends.all():
+            self.friends.add(user)
 
     def remove(self, user):
-        if user in self.friend_list.all():
-            self.friend_list.remove(user)
+        if user in self.friends.all():
+            self.friends.remove(user)
 
     def end_friendship(self, friend):
         """End friendship between two users. Removes users from each other's friend lists"""
@@ -35,7 +35,7 @@ class FriendList(models.Model):
             pass
 
     def is_mutual_friend(self, friend):
-        if friend in self.friend_list.all():
+        if friend in self.friends.all():
             return True
         return False
 
