@@ -61,10 +61,12 @@ class FriendInvitation(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
     sent_at = models.DateTimeField(auto_now_add=timezone.now)
-    status = models.CharField(max_length=3, choices=Status.choices, default=Status.PENDING , null=False, blank=False)
+    status = models.CharField(max_length=3, choices=Status.choices, default=Status.PENDING, null=False, blank=False)
 
     class Meta:
-        unique_together = ('sender', 'receiver')
+        constraints = [
+            models.UniqueConstraint(fields=['sender', 'receiver'], name='unique invite')
+        ]
 
     def __str__(self):
         return f"{self.sender} wants to be friends with {self.receiver}"
