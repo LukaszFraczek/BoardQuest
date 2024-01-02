@@ -1,0 +1,36 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="col-lg-12">
+
+    {% block before_list %}
+    {% endblock before_list %}
+
+    <!-- Friends row -->
+    <div class="row align-items-stretch">
+        {% for user in users %}
+            {% if forloop.counter0|divisibleby:4 %}
+                </div><div class="row mb-4">
+            {% endif %}
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <!-- Profile Info -->
+                <div class="card shadow h-100">
+                    <div class="card-body d-flex flex-column m-1">
+                        <a href="{% url 'user-profile' user.id %}">
+                            <img class="img-profile rounded-circle img-fluid mb-3" src="{{ user.profile.image.url }}">
+                            <h2 class="m-0 font-weight-bold text-primary text-center text-truncate flex-fill">{{ user.username }}</h2>
+                        </a>
+
+                        {% block user_card %}
+                        {% endblock user_card %}
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+<!-- End of row -->
+
+</div>
+{% endblock content %}

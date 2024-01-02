@@ -1,4 +1,4 @@
-{% extends 'layout/base.html' %}
+{% extends 'friends/common.html' %}
 {% load static %}
 
 {% block title %}
@@ -9,50 +9,19 @@
     Friend search
 {% endblock page_heading %}
 
-{% block content %}
-<!-- Basic Card Example -->
-<div class="col-lg-12">
-    <div class="card shadow mb-4">
-        <div class="card-body">
+{% block before_list %}
 
-            <div class="row mb-4">
-                <form method="get" action="{% url 'friends-user-search' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
-                    <div class="input-group">
-                        <input type="text" name="username" id="username" value="{{ request.GET.username }}" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-search fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
+    <div class="row mb-4">
+        <form method="get" action="{% url 'friends-user-search' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
+            <div class="input-group">
+                <input type="text" name="username" id="username" value="{{ request.GET.username }}" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
             </div>
-
-
-            <!-- Friends row -->
-            <div class="row align-items-stretch">
-                {% for user in search_result %}
-                    {% if forloop.counter0|divisibleby:4 %}
-                        </div><div class="row mb-4">
-                    {% endif %}
-                    <div class="col-lg-3 col-md-3 col-sm-3">
-                        <!-- Profile Info -->
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column m-1">
-                                <a href="{% url 'user-profile' user.id %}">
-                                    <img class="img-profile rounded-circle img-fluid mb-3" src="{{ user.profile.image.url }}">
-                                    <h2 class="m-0 font-weight-bold text-primary text-center text-truncate flex-fill">{{ user.username }}</h2>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-
-            </div>
-            <!-- End of row -->
-
-        </div>
+        </form>
     </div>
-</div>
 
-{% endblock content %}
+{% endblock before_list %}
