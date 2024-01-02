@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.views.generic import ListView
 
 from users.models import Profile
@@ -21,9 +22,21 @@ class FriendsListView(LoginRequiredMixin, ListView):
         return context
 
 
+class FriendSearchView(LoginRequiredMixin, ListView):
+    template_name = 'friends/search.html'
+    context_object_name = 'search_result'
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+
+        # Search for specified username in querystring
+        username = self.request.GET.get('username')
+        if username:
+            queryset = queryset.filter(username__icontains=username)
+
+        return queryset
+
+
 class FriendInvitesView(LoginRequiredMixin):
     pass
 
-
-class FriendSearchView(LoginRequiredMixin):
-    pass
