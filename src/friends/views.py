@@ -12,13 +12,13 @@ class FriendsListView(LoginRequiredMixin, ListView):
     context_object_name = 'users'
 
     def get_queryset(self):
-        friend_list = get_object_or_404(FriendList, user=self.kwargs['pk'])
+        friend_list = get_object_or_404(FriendList, user=self.kwargs['user_id'])
         friends = friend_list.friends.all()
         return User.objects.filter(id__in=friends)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['friend_list'] = get_object_or_404(FriendList, user=self.kwargs['pk'])
+        context['friend_list'] = get_object_or_404(FriendList, user=self.kwargs['user_id'])
         return context
 
 
