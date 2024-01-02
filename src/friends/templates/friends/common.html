@@ -1,5 +1,7 @@
 {% extends 'layout/base.html' %}
 
+{% load friends_filters %}
+
 {% block content %}
 <div class="col-lg-12">
 
@@ -22,6 +24,19 @@
                         </a>
 
                         {% block user_card %}
+                            {% if user.id == request.user.id %}  {# Exclude current user #}
+                                <p>This is you!</p>
+                            {% elif request.user|is_friend:user %} {# Exclude friends #}
+                                <p>This user is already your friend!</p>
+                            {% else %}
+                                {% if request.user|invite_pending:user %} {# Check for pending invitation #}
+                                    <p>Accept/Deny invitation</p>
+                                {% elif request.user|invite_sent:user %} {# Check for sent invitation #}
+                                    <p>Cancel sent invitation</p>
+                                {% else %}
+                                    <a href="{% url 'friends-invitation-send' user.id %}">Invite</a>
+                                {% endif %}
+                            {% endif %}
                         {% endblock user_card %}
 
                     </div>
