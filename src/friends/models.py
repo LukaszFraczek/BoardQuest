@@ -46,8 +46,10 @@ class FriendList(models.Model):
             return False
         return True
 
-    def is_mutual_friend(self, friend):
-        if friend in self.friends.all():
+    def is_friend(self, user):
+        """Check if user is already in the friend list"""
+
+        if user in self.friends.all():
             return True
         return False
 
@@ -75,13 +77,14 @@ class FriendInvitation(models.Model):
     sent_at = models.DateTimeField(auto_now_add=timezone.now)
     status = models.CharField(max_length=3, choices=Status.choices, default=Status.PENDING, null=False, blank=False)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['sender', 'receiver'], name='unique invite')
-        ]
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(fields=['sender', 'receiver'], name='unique invite')
+    #     ]
+    # TODO: unikalne tylko z pending. Stachu pomusz
 
     def __str__(self):
-        return f"{self.sender} wants to be friends with {self.receiver}"
+        return f"Friend invitation from {self.sender} to {self.receiver}"
 
     def accept(self):
         """Accept a friend request"""

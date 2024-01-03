@@ -20,21 +20,52 @@
                     <div class="card-body d-flex flex-column m-1">
                         <a href="{% url 'user-profile' user.id %}">
                             <img class="img-profile rounded-circle img-fluid mb-3" src="{{ user.profile.image.url }}">
-                            <h2 class="m-0 font-weight-bold text-primary text-center text-truncate flex-fill">{{ user.username }}</h2>
+                            <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">{{ user.username }}</h2>
                         </a>
-
                         {% block user_card %}
                             {% if user.id == request.user.id %}  {# Exclude current user #}
-                                <p>This is you!</p>
+                                <p class="text-center">This is you!</p>
                             {% elif request.user|is_friend:user %} {# Exclude friends #}
-                                <p>This user is already your friend!</p>
+                                <p class="text-center">This user is already your friend</p>
+                                <div class="col-auto text-center">
+                                    <a class="btn btn-primary btn-icon-split" href="{% url "friends-list" request.user.id %}">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-user-friends"></i>
+                                        </span>
+                                        <span class="text">Friend List</span>
+                                    </a>
+                                </div>
                             {% else %}
                                 {% if request.user|invite_pending:user %} {# Check for pending invitation #}
-                                    <p>Accept/Deny invitation</p>
+                                    <p class="text-center">Pending invite from this user!</p>
+                                    <div class="col-auto text-center">
+                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends-invites-received" %}">
+                                            <span class="icon text-white-50">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </span>
+                                            <span class="text">Check invites</span>
+                                        </a>
+                                    </div>
                                 {% elif user|invite_pending:request.user %} {# Check for sent invitation #}
-                                    <p>Cancel sent invitation</p>
+                                    <p class="text-center">Invite already sent to this user!</p>
+                                    <div class="col-auto text-center">
+                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends-invites-sent" %}">
+                                            <span class="icon text-white-50">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </span>
+                                            <span class="text">Check invites</span>
+                                        </a>
+                                    </div>
                                 {% else %}
-                                    <a href="{% url 'friends-invitation-send' user.id %}">Invite</a>
+                                    <p class="text-center">Not a friend yet...</p>
+                                    <div class="col-auto text-center">
+                                        <a class="btn btn-success btn-icon-split" href="{% url "friends-invitation-create" user.id %}">
+                                            <span class="icon text-white-50">
+                                                <i class="fas fa-user-plus"></i>
+                                            </span>
+                                            <span class="text">Invite</span>
+                                        </a>
+                                    </div>
                                 {% endif %}
                             {% endif %}
                         {% endblock user_card %}

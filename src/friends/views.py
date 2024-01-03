@@ -1,4 +1,3 @@
-from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -6,6 +5,7 @@ from django.views import View
 from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+
 from .models import FriendList, FriendInvitation
 
 
@@ -39,19 +39,53 @@ class FriendSearchView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class InvitationSendView(LoginRequiredMixin, View):
+class FriendRemoveView(LoginRequiredMixin, View):
+    def get(self, request, user_id):
+        current_user = self.request.user
+        selected_user = get_object_or_404(User, id=user_id)
+
+        current_user.friendlist.end_friendship(selected_user)
+
+        return HttpResponseRedirect(reverse_lazy('friends-list'))
+
+
+class InvitesSentListView(LoginRequiredMixin, ListView):
+    template_name = 'friends/invites_sent.html'
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        invitation_receiver_ids = FriendInvitation.objects.filter(
+            sender=self.request.user,
+            status=FriendInvitation.Status.PENDING,
+        ).values("receiver")
+        return User.objects.filter(id__in=invitation_receiver_ids)
+
+
+class InvitesReceivedListView(LoginRequiredMixin, ListView):
+    template_name = 'friends/invites_received.html'
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        invitation_sender_ids = FriendInvitation.objects.filter(
+            receiver=self.request.user,
+            status=FriendInvitation.Status.PENDING,
+        ).values("sender")
+        return User.objects.filter(id__in=invitation_sender_ids)
+
+
+class InvitationCreateView(LoginRequiredMixin, View):
     def get(self, request, user_id):
         current_user = self.request.user
         selected_user = get_object_or_404(User, id=user_id)
 
         # Check for existing invitation
-        invitation_exists = FriendInvitation.objects.filter(
+        invitation = FriendInvitation.objects.filter(
             sender=current_user,
             receiver=selected_user,
             status=FriendInvitation.Status.PENDING,
-        ).exists()
+        )
 
-        if not invitation_exists and current_user != selected_user:
+        if not invitation.exists() and current_user != selected_user and not current_user.friendlist.is_friend(selected_user):
             FriendInvitation.objects.create(sender=current_user, receiver=selected_user)
 
         return HttpResponseRedirect(reverse_lazy('friends-user-search'))
@@ -62,21 +96,17 @@ class InvitationAcceptView(LoginRequiredMixin, View):
         current_user = self.request.user
         selected_user = get_object_or_404(User, id=user_id)
 
-        invitation_exists = FriendInvitation.objects.get(
+        invitation = FriendInvitation.objects.filter(
             sender=selected_user,
             receiver=current_user,
             status=FriendInvitation.Status.PENDING,
-        ).exists()
+        )
 
-        if invitation_exists:
+        if invitation.exists():
             # Add users to each others friend lists
             if current_user.friendlist.make_friends(selected_user):
                 # Change status to accepted if all went well
-                FriendInvitation.objects.filter(
-                    sender=selected_user,
-                    receiver=current_user,
-                    status=FriendInvitation.Status.PENDING,
-                ).update(
+                invitation.update(
                     status=FriendInvitation.Status.ACCEPTED,
                 )
 
@@ -85,12 +115,9 @@ class InvitationAcceptView(LoginRequiredMixin, View):
 
 class InvitationDeclineView(LoginRequiredMixin, View):
     def get(self, request, user_id):
-        current_user = self.request.user
-        selected_user = get_object_or_404(User, id=user_id)
-
         FriendInvitation.objects.filter(
-            sender=selected_user,
-            receiver=current_user,
+            sender=get_object_or_404(User, id=user_id),
+            receiver=self.request.user,
             status=FriendInvitation.Status.PENDING,
         ).update(
             status=FriendInvitation.Status.DECLINED,
@@ -101,12 +128,9 @@ class InvitationDeclineView(LoginRequiredMixin, View):
 
 class InvitationCancelView(LoginRequiredMixin, View):
     def get(self, request, user_id):
-        current_user = self.request.user
-        selected_user = get_object_or_404(User, id=user_id)
-
         FriendInvitation.objects.filter(
-            sender=current_user,
-            receiver=selected_user,
+            sender=self.request.user,
+            receiver=get_object_or_404(User, id=user_id),
             status=FriendInvitation.Status.PENDING,
         ).update(
             status=FriendInvitation.Status.CANCELLED,

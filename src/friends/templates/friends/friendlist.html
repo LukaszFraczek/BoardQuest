@@ -6,9 +6,22 @@
 {% endblock title %}
 
 {% block page_heading %}
-    {% if user == friend_list.user %}
+    {% if friend_list.user == request.user %}
         My Friends
     {% else %}
         {{ friend_list.user.username }}'s Friends
     {% endif %}
 {% endblock page_heading %}
+
+{% block user_card %}
+    {% if friend_list.user == request.user %}
+        <div class="col-auto text-center">
+            <a class="btn btn-secondary btn-icon-split" href="{% url 'friends-remove-friend' user.id %}">
+                <span class="icon text-white-50">
+                    <i class="fas fa-user-times"></i>
+                </span>
+                <span class="text">Remove Friend</span>
+            </a>
+        </div>
+    {% endif %}
+{% endblock user_card %}

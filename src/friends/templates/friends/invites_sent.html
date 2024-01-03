@@ -1,0 +1,21 @@
+{% extends 'friends/common.html' %}
+{% load static %}
+
+{% block title %}
+    Invites
+{% endblock title %}
+
+{% block page_heading %}
+    Invites
+{% endblock page_heading %}
+
+{% block user_card %}
+    <div class="col-auto text-center">
+        <a class="btn btn-danger btn-icon-split" href="{% url 'friends-invitation-cancel' user.id %}">
+            <span class="icon text-white-50">
+                <i class="fas fa-times"></i>
+            </span>
+            <span class="text">Cancel</span>
+        </a>
+    </div>
+{% endblock user_card %}

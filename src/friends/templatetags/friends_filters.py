@@ -7,7 +7,7 @@ register = template.Library()
 @register.filter
 def is_friend(user, friend):
     friend_list = FriendList.objects.get(user=user)
-    return friend_list.is_mutual_friend(friend)
+    return friend_list.is_friend(friend)
 
 
 @register.filter

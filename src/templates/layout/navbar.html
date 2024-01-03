@@ -13,8 +13,10 @@
                 </a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{% url 'friends-list' user.id %}">My friends</a>
-                    <a class="dropdown-item" href="{% url 'homepage' %}">Invites</a>  <!-- TODO -->
                     <a class="dropdown-item" href="{% url 'friends-user-search' %}">Search</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'friends-invites-received' %}">Received invites</a>
+                    <a class="dropdown-item" href="{% url 'friends-invites-sent' %}">Sent invites</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
