@@ -19,12 +19,3 @@ def invite_pending(user, sender):
     ).exists()
     return invitation_exists
 
-
-@register.filter
-def invite_sent(user, receiver):
-    invitation_exists = FriendInvitation.objects.filter(
-        receiver=receiver,
-        sender=user,
-        status=FriendInvitation.Status.PENDING,
-    ).exists()
-    return invitation_exists

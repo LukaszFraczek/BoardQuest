@@ -31,7 +31,7 @@
                             {% else %}
                                 {% if request.user|invite_pending:user %} {# Check for pending invitation #}
                                     <p>Accept/Deny invitation</p>
-                                {% elif request.user|invite_sent:user %} {# Check for sent invitation #}
+                                {% elif user|invite_pending:request.user %} {# Check for sent invitation #}
                                     <p>Cancel sent invitation</p>
                                 {% else %}
                                     <a href="{% url 'friends-invitation-send' user.id %}">Invite</a>
