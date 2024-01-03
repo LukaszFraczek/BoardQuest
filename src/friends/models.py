@@ -31,8 +31,20 @@ class FriendList(models.Model):
                 friend_flist = FriendList.objects.get(user=friend)
                 friend_flist.remove(self.user)
         except IntegrityError:
-            # TODO: transaction error handling
-            pass
+            return False
+        return True
+
+    def make_friends(self, new_friend):
+        """Make two users friends. Add users to each other's friend lists"""
+
+        try:
+            with transaction.atomic():
+                self.add(new_friend)
+                friend_flist = FriendList.objects.get(user=new_friend)
+                friend_flist.add(self.user)
+        except IntegrityError:
+            return False
+        return True
 
     def is_mutual_friend(self, friend):
         if friend in self.friends.all():
