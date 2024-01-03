@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
 
+from friends.models import FriendList
 from .models import Profile
 from .forms import (
     UserLoginForm,
@@ -38,4 +40,11 @@ class ProfileView(DetailView):
     model = Profile
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Profile, user=self.kwargs['pk'])
+        return get_object_or_404(Profile, user=self.kwargs['user_id'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        friend_list = get_object_or_404(FriendList, user=self.kwargs['user_id'])
+        friend_ids = friend_list.friends.all()
+        context['friends'] = User.objects.filter(id__in=friend_ids).order_by('id')[:3]  # TODO: add a system to decide which 3 firends are shown
+        return context
