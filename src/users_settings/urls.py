@@ -7,11 +7,13 @@ from .views import (
     SettingsPasswordView,
 )
 
-PREFIX = 'users/settings/'
+PREFIX = 'users/settings'
 
+
+app_name = 'users_settings'
 urlpatterns = [
-    path(f'{PREFIX}/', SettingsView.as_view(), name='user-settings'),
-    path(f'{PREFIX}/username/', SettingsUsernameView.as_view(), name='settings-username'),
-    path(f'{PREFIX}/email/', SettingsEmailView.as_view(), name='settings-email'),
-    path(f'{PREFIX}/password/', SettingsPasswordView.as_view(), name='settings-password'),
+    path(f'{PREFIX}/', SettingsView.as_view(), name='general'),
+    path(f'{PREFIX}/username/', SettingsUsernameView.as_view(), name='username'),
+    path(f'{PREFIX}/email/', SettingsEmailView.as_view(), name='email'),
+    path(f'{PREFIX}/password/', SettingsPasswordView.as_view(), name='password'),
 ]

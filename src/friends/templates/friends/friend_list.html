@@ -16,7 +16,7 @@
 {% block user_card %}
     {% if friend_list.user == request.user %}
         <div class="col-auto text-center">
-            <a class="btn btn-secondary btn-icon-split" href="{% url 'friends-remove-friend' user.id %}">
+            <a class="btn btn-secondary btn-icon-split" href="{% url 'friends:remove-friend' user.id %}">
                 <span class="icon text-white-50">
                     <i class="fas fa-user-times"></i>
                 </span>

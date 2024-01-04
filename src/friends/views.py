@@ -10,7 +10,7 @@ from .models import FriendList, FriendInvitation
 
 
 class FriendsListView(LoginRequiredMixin, ListView):
-    template_name = 'friends/friendlist.html'
+    template_name = 'friends/friend_list.html'
     context_object_name = 'users'
 
     def get_queryset(self):
@@ -46,7 +46,7 @@ class FriendRemoveView(LoginRequiredMixin, View):
 
         current_user.friendlist.end_friendship(selected_user)
 
-        return HttpResponseRedirect(reverse_lazy('friends-list'))
+        return HttpResponseRedirect(reverse_lazy('friends:list'))
 
 
 class InvitesSentListView(LoginRequiredMixin, ListView):
@@ -88,7 +88,7 @@ class InvitationCreateView(LoginRequiredMixin, View):
         if not invitation.exists() and current_user != selected_user and not current_user.friendlist.is_friend(selected_user):
             FriendInvitation.objects.create(sender=current_user, receiver=selected_user)
 
-        return HttpResponseRedirect(reverse_lazy('friends-user-search'))
+        return HttpResponseRedirect(reverse_lazy('friends:user-search'))
 
 
 class InvitationAcceptView(LoginRequiredMixin, View):
@@ -110,7 +110,7 @@ class InvitationAcceptView(LoginRequiredMixin, View):
                     status=FriendInvitation.Status.ACCEPTED,
                 )
 
-        return HttpResponseRedirect(reverse_lazy('friends-user-search'))
+        return HttpResponseRedirect(reverse_lazy('friends:user-search'))
 
 
 class InvitationDeclineView(LoginRequiredMixin, View):
@@ -123,7 +123,7 @@ class InvitationDeclineView(LoginRequiredMixin, View):
             status=FriendInvitation.Status.DECLINED,
         )
 
-        return HttpResponseRedirect(reverse_lazy('friends-user-search'))
+        return HttpResponseRedirect(reverse_lazy('friends:user-search'))
 
 
 class InvitationCancelView(LoginRequiredMixin, View):
@@ -136,4 +136,4 @@ class InvitationCancelView(LoginRequiredMixin, View):
             status=FriendInvitation.Status.CANCELLED,
         )
 
-        return HttpResponseRedirect(reverse_lazy('friends-user-search'))
+        return HttpResponseRedirect(reverse_lazy('friends:user-search'))

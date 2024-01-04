@@ -19,7 +19,7 @@ class SettingsView(LoginRequiredMixin, UpdateView):
     model = Profile
     template_name = 'users_settings/settings.html'
     form_class = ProfileUpdateForm
-    success_url = reverse_lazy('user-settings')
+    success_url = reverse_lazy('users:users_settings:general')
 
     def get_object(self, queryset=None):
         return self.request.user.profile
@@ -29,7 +29,7 @@ class SettingsUsernameView(LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'users_settings/username.html'
     form_class = UserUsernameUpdateForm
-    success_url = reverse_lazy('user-settings')
+    success_url = reverse_lazy('users:users_settings:general')
 
     def get_form_kwargs(self):
         # Sending user object to the form
@@ -52,7 +52,7 @@ class SettingsEmailView(LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'users_settings/email.html'
     form_class = UserEmailUpdateForm
-    success_url = reverse_lazy('user-settings')
+    success_url = reverse_lazy('users:users_settings:general')
 
     def get_form_kwargs(self):
         # Sending user object to the form
@@ -75,7 +75,7 @@ class SettingsPasswordView(LoginRequiredMixin, PasswordChangeView):
     model = User
     template_name = 'users_settings/password.html'
     form_class = UserPasswordUpdateForm
-    success_url = reverse_lazy('user-login')
+    success_url = reverse_lazy('users:login')
 
     def get_object(self, queryset=None):
         return self.request.user

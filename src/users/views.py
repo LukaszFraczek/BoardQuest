@@ -17,14 +17,14 @@ from .forms import (
 class UserRegisterView(SuccessMessageMixin, CreateView):
     template_name = 'users/register.html'
     form_class = UserRegisterForm
-    success_url = reverse_lazy('user-login')
+    success_url = reverse_lazy('users:login')
     success_message = "Welcome, %(username)s. You have successfully signed up!"
 
 
 class UserLoginView(LoginView):
     template_name = 'users/login.html'
     form_class = UserLoginForm
-    success_url = reverse_lazy('homepage')
+    success_url = reverse_lazy('homepage:homepage')
 
     def form_invalid(self, form):
         messages.warning(self.request, 'Invalid username or password. Please try again.')
