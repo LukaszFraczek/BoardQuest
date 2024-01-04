@@ -11,7 +11,7 @@
 
 {% block user_card %}
     <div class="col-auto text-center mb-2">
-        <a class="btn btn-success btn-icon-split" href="{% url 'friends:invitation-accept' user.id %}">
+        <a class="btn btn-success btn-icon-split" href="{% url 'friends:invitations:accept' user.id %}">
             <span class="icon text-white-50">
                 <i class="fas fa-check"></i>
             </span>
@@ -19,7 +19,7 @@
         </a>
     </div>
     <div class="col-auto text-center">
-        <a class="btn btn-danger btn-icon-split" href="{% url 'friends:invitation-decline' user.id %}">
+        <a class="btn btn-danger btn-icon-split" href="{% url 'friends:invitations:decline' user.id %}">
             <span class="icon text-white-50">
                 <i class="fas fa-times"></i>
             </span>

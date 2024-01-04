@@ -8,7 +8,7 @@ from .views import (
 )
 
 NAMESPACE = 'settings'
-PREFIX = 'users/settings/'
+URL_PREFIX = 'users/settings/'
 
 patterns = [
     path('', SettingsView.as_view(), name='general'),
@@ -17,8 +17,8 @@ patterns = [
     path('password/', SettingsPasswordView.as_view(), name='password'),
 ]
 
-users_settings_patterns = (patterns, NAMESPACE)
+namespace_patterns = (patterns, NAMESPACE)
 
 urlpatterns = [
-    path(f'{PREFIX}', include(users_settings_patterns)),
+    path(f'{URL_PREFIX}', include(namespace_patterns)),
 ]

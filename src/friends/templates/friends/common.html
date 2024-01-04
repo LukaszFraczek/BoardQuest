@@ -39,7 +39,7 @@
                                 {% if request.user|invite_pending:user %} {# Check for pending invitation #}
                                     <p class="text-center">Pending invite from this user!</p>
                                     <div class="col-auto text-center">
-                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends:invites-received" %}">
+                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends:invitations:received" %}">
                                             <span class="icon text-white-50">
                                                 <i class="fas fa-arrow-right"></i>
                                             </span>
@@ -49,7 +49,7 @@
                                 {% elif user|invite_pending:request.user %} {# Check for sent invitation #}
                                     <p class="text-center">Invite already sent to this user!</p>
                                     <div class="col-auto text-center">
-                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends:invites-sent" %}">
+                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends:invitations:sent" %}">
                                             <span class="icon text-white-50">
                                                 <i class="fas fa-arrow-right"></i>
                                             </span>
@@ -59,7 +59,7 @@
                                 {% else %}
                                     <p class="text-center">Not a friend yet...</p>
                                     <div class="col-auto text-center">
-                                        <a class="btn btn-success btn-icon-split" href="{% url "friends:invitation-create" user.id %}">
+                                        <a class="btn btn-success btn-icon-split" href="{% url "friends:invitations:create" user.id %}">
                                             <span class="icon text-white-50">
                                                 <i class="fas fa-user-plus"></i>
                                             </span>
