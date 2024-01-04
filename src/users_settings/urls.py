@@ -7,13 +7,18 @@ from .views import (
     SettingsPasswordView,
 )
 
-PREFIX = 'users/settings'
+NAMESPACE = 'settings'
+PREFIX = 'users/settings/'
 
+patterns = [
+    path('', SettingsView.as_view(), name='general'),
+    path('username/', SettingsUsernameView.as_view(), name='username'),
+    path('email/', SettingsEmailView.as_view(), name='email'),
+    path('password/', SettingsPasswordView.as_view(), name='password'),
+]
 
-app_name = 'users_settings'
+users_settings_patterns = (patterns, NAMESPACE)
+
 urlpatterns = [
-    path(f'{PREFIX}/', SettingsView.as_view(), name='general'),
-    path(f'{PREFIX}/username/', SettingsUsernameView.as_view(), name='username'),
-    path(f'{PREFIX}/email/', SettingsEmailView.as_view(), name='email'),
-    path(f'{PREFIX}/password/', SettingsPasswordView.as_view(), name='password'),
+    path(f'{PREFIX}', include(users_settings_patterns)),
 ]
