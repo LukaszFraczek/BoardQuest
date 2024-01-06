@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.views import View
@@ -86,10 +87,19 @@ class InvitationsCreateView(LoginRequiredMixin, View):
             status=FriendInvitation.Status.PENDING,
         )
 
-        if not invitation.exists() and current_user != selected_user and not current_user.friendlist.is_friend(selected_user):
+        if invitation.exists():
+            messages.warning(request, 'Invitation to this user already exists!')
+        elif current_user == selected_user:
+            messages.warning(request, 'You cannot invite yourself!')
+        elif current_user.friendlist.is_friend(selected_user):
+            messages.warning(request, 'This user is already your friend!')
+        else:
             FriendInvitation.objects.create(sender=current_user, receiver=selected_user)
+            messages.success(request, f'Invite sent to {selected_user.username}!')
 
-        return HttpResponseRedirect(reverse_lazy('friends:search'))
+        # Extract the "next" parameter from the request
+        next_url = request.POST.get('next', 'friends:search')
+        return HttpResponseRedirect(next_url)
 
 
 class InvitationsAcceptView(LoginRequiredMixin, View):
