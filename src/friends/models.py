@@ -77,12 +77,6 @@ class FriendInvitation(models.Model):
     sent_at = models.DateTimeField(auto_now_add=timezone.now)
     status = models.CharField(max_length=3, choices=Status.choices, default=Status.PENDING, null=False, blank=False)
 
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(fields=['sender', 'receiver'], name='unique invite')
-    #     ]
-    # TODO: unikalne tylko z pending. Stachu pomusz
-
     def __str__(self):
         return f"Friend invitation from {self.sender} to {self.receiver}"
 
