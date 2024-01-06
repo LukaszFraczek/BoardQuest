@@ -49,7 +49,7 @@ class FriendRemoveView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse_lazy('friends:list'))
 
 
-class InvitesSentListView(LoginRequiredMixin, ListView):
+class InvitationsSentListView(LoginRequiredMixin, ListView):
     template_name = 'friends/invites_sent.html'
     context_object_name = 'users'
 
@@ -61,7 +61,7 @@ class InvitesSentListView(LoginRequiredMixin, ListView):
         return User.objects.filter(id__in=invitation_receiver_ids)
 
 
-class InvitesReceivedListView(LoginRequiredMixin, ListView):
+class InvitationsReceivedListView(LoginRequiredMixin, ListView):
     template_name = 'friends/invites_received.html'
     context_object_name = 'users'
 
@@ -73,8 +73,9 @@ class InvitesReceivedListView(LoginRequiredMixin, ListView):
         return User.objects.filter(id__in=invitation_sender_ids)
 
 
-class InvitationCreateView(LoginRequiredMixin, View):
-    def get(self, request, user_id):
+class InvitationsCreateView(LoginRequiredMixin, View):
+    def post(self, request):
+        user_id = request.POST.get('user_id')
         current_user = self.request.user
         selected_user = get_object_or_404(User, id=user_id)
 
@@ -91,7 +92,7 @@ class InvitationCreateView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse_lazy('friends:search'))
 
 
-class InvitationAcceptView(LoginRequiredMixin, View):
+class InvitationsAcceptView(LoginRequiredMixin, View):
     def get(self, request, user_id):
         current_user = self.request.user
         selected_user = get_object_or_404(User, id=user_id)
@@ -113,7 +114,7 @@ class InvitationAcceptView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse_lazy('friends:search'))
 
 
-class InvitationDeclineView(LoginRequiredMixin, View):
+class InvitationsDeclineView(LoginRequiredMixin, View):
     def get(self, request, user_id):
         FriendInvitation.objects.filter(
             sender=get_object_or_404(User, id=user_id),
@@ -126,7 +127,7 @@ class InvitationDeclineView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse_lazy('friends:search'))
 
 
-class InvitationCancelView(LoginRequiredMixin, View):
+class InvitationsCancelView(LoginRequiredMixin, View):
     def get(self, request, user_id):
         FriendInvitation.objects.filter(
             sender=self.request.user,
