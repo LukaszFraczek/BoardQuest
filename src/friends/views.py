@@ -1,3 +1,4 @@
+from django.db.models import Subquery, OuterRef
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -41,13 +42,15 @@ class FriendSearchView(LoginRequiredMixin, ListView):
 
 
 class FriendRemoveView(LoginRequiredMixin, View):
-    def get(self, request, user_id):
+    def post(self, request):
         current_user = self.request.user
-        selected_user = get_object_or_404(User, id=user_id)
+        user_to_remove_id = request.POST.get('user_id')
+        user_to_remove = get_object_or_404(User, id=user_to_remove_id)
 
-        current_user.friendlist.end_friendship(selected_user)
+        current_user.friendlist.end_friendship(user_to_remove)
 
-        return HttpResponseRedirect(reverse_lazy('friends:list'))
+        next_url = request.POST.get('next', 'friends:list')
+        return HttpResponseRedirect(next_url)
 
 
 class InvitationsSentListView(LoginRequiredMixin, ListView):
@@ -55,11 +58,25 @@ class InvitationsSentListView(LoginRequiredMixin, ListView):
     context_object_name = 'users'
 
     def get_queryset(self):
-        invitation_receiver_ids = FriendInvitation.objects.filter(
+        # Query invitations sent by current user...
+        invitations_sent = FriendInvitation.objects.filter(
             sender=self.request.user,
             status=FriendInvitation.Status.PENDING,
-        ).values("receiver")
-        return User.objects.filter(id__in=invitation_receiver_ids)
+        )
+
+        # Subquery to get invitation id for each user...
+        invitations_sent_id = invitations_sent.filter(
+            receiver=OuterRef('id')
+        ).values('id')[:1]
+
+        # annotate user queryset with invitation_id
+        users = User.objects.filter(
+            id__in=invitations_sent.values("receiver")
+        ).annotate(
+            invitation_id=Subquery(invitations_sent_id)
+        )
+
+        return users
 
 
 class InvitationsReceivedListView(LoginRequiredMixin, ListView):
@@ -67,11 +84,25 @@ class InvitationsReceivedListView(LoginRequiredMixin, ListView):
     context_object_name = 'users'
 
     def get_queryset(self):
-        invitation_sender_ids = FriendInvitation.objects.filter(
+        # Query invitations sent TO current user...
+        invitations_received = FriendInvitation.objects.filter(
             receiver=self.request.user,
             status=FriendInvitation.Status.PENDING,
-        ).values("sender")
-        return User.objects.filter(id__in=invitation_sender_ids)
+        )
+
+        # Subquery to get invitation id for each user...
+        invitations_received_id = invitations_received.filter(
+            sender=OuterRef('id')
+        ).values('id')[:1]
+
+        # annotate user queryset with invitation_id
+        users = User.objects.filter(
+            id__in=invitations_received.values("sender")
+        ).annotate(
+            invitation_id=Subquery(invitations_received_id)
+        )
+
+        return users
 
 
 class InvitationsCreateView(LoginRequiredMixin, View):
@@ -103,48 +134,54 @@ class InvitationsCreateView(LoginRequiredMixin, View):
 
 
 class InvitationsAcceptView(LoginRequiredMixin, View):
-    def get(self, request, user_id):
-        current_user = self.request.user
-        selected_user = get_object_or_404(User, id=user_id)
-
-        invitation = FriendInvitation.objects.filter(
-            sender=selected_user,
-            receiver=current_user,
+    def post(self, request):
+        invitation_id = request.POST.get('invitation_id')
+        invitation = get_object_or_404(
+            FriendInvitation,
+            id=invitation_id,
             status=FriendInvitation.Status.PENDING,
         )
 
-        if invitation.exists():
-            # Add users to each others friend lists
-            if current_user.friendlist.make_friends(selected_user):
-                # Change status to accepted if all went well
-                invitation.update(
-                    status=FriendInvitation.Status.ACCEPTED,
-                )
+        inv_sender = invitation.sender
+        messages.success(request, f'You are now friends with {inv_sender.username}!')
 
-        return HttpResponseRedirect(reverse_lazy('friends:search'))
+        FriendInvitation.accept(invitation)
+
+        next_url = request.POST.get('next', 'friends:invitations:received')
+        return HttpResponseRedirect(next_url)
 
 
 class InvitationsDeclineView(LoginRequiredMixin, View):
-    def get(self, request, user_id):
-        FriendInvitation.objects.filter(
-            sender=get_object_or_404(User, id=user_id),
-            receiver=self.request.user,
+    def post(self, request):
+        invitation_id = request.POST.get('invitation_id')
+        invitation = get_object_or_404(
+            FriendInvitation,
+            id=invitation_id,
             status=FriendInvitation.Status.PENDING,
-        ).update(
-            status=FriendInvitation.Status.DECLINED,
         )
 
-        return HttpResponseRedirect(reverse_lazy('friends:search'))
+        inv_sender = invitation.sender
+        messages.warning(request, f'Invitation from {inv_sender.username} declined')
+
+        FriendInvitation.decline(invitation)
+
+        next_url = request.POST.get('next', 'friends:invitations:received')
+        return HttpResponseRedirect(next_url)
 
 
 class InvitationsCancelView(LoginRequiredMixin, View):
-    def get(self, request, user_id):
-        FriendInvitation.objects.filter(
-            sender=self.request.user,
-            receiver=get_object_or_404(User, id=user_id),
+    def post(self, request):
+        invitation_id = request.POST.get('invitation_id')
+        invitation = get_object_or_404(
+            FriendInvitation,
+            id=invitation_id,
             status=FriendInvitation.Status.PENDING,
-        ).update(
-            status=FriendInvitation.Status.CANCELLED,
         )
 
-        return HttpResponseRedirect(reverse_lazy('friends:search'))
+        inv_receiver = invitation.receiver
+        messages.warning(request, f'Invitation sent to {inv_receiver.username} cancelled')
+
+        FriendInvitation.cancel(invitation)
+
+        next_url = request.POST.get('next', 'friends:invitations:sent')
+        return HttpResponseRedirect(next_url)

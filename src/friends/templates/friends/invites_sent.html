@@ -11,11 +11,16 @@
 
 {% block user_card %}
     <div class="col-auto text-center">
-        <a class="btn btn-danger btn-icon-split" href="{% url 'friends:invitations:cancel' user.id %}">
-            <span class="icon text-white-50">
-                <i class="fas fa-times"></i>
-            </span>
-            <span class="text">Cancel</span>
-        </a>
+        <form method="post" action="{% url 'friends:invitations:cancel' %}">
+            {% csrf_token %}
+            <input type="hidden" name="invitation_id" value="{{ user.invitation_id }}">
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="btn btn-danger btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-times"></i>
+                </span>
+                <span class="text">Cancel</span>
+            </button>
+        </form>
     </div>
 {% endblock user_card %}

@@ -57,18 +57,20 @@
                                         </a>
                                     </div>
                                 {% else %}
-                                    <p class="text-center">Not a friend yet...</p>
-                                    <form method="post" action="{% url 'friends:invitations:create' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                        <button type="submit" class="btn btn-success btn-icon-split">
-                                            <span class="icon text-white-50">
-                                                <i class="fas fa-user-plus"></i>
-                                            </span>
-                                            <span class="text">Invite</span>
-                                        </button>
-                                    </form>
+                                    <div class="col-auto text-center">
+                                        <p>Not a friend yet...</p>
+                                        <form method="post" action="{% url 'friends:invitations:create' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="btn btn-success btn-icon-split">
+                                                <span class="icon text-white-50">
+                                                    <i class="fas fa-user-plus"></i>
+                                                </span>
+                                                <span class="text">Invite</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 {% endif %}
                             {% endif %}
                         {% endblock user_card %}

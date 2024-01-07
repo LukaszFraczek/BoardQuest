@@ -154,8 +154,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Overwrite default Django login and redirect URLs
 
-LOGIN_REDIRECT_URL = 'homepage'
+LOGIN_REDIRECT_URL = 'homepage:homepage'
 
-LOGIN_URL = 'user-login'
+LOGIN_URL = 'users:login'
 
-LOGOUT_REDIRECT_URL = 'homepage'
+LOGOUT_REDIRECT_URL = 'homepage:homepage'

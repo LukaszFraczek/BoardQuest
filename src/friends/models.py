@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from icecream import ic
 
 class FriendList(models.Model):
     """Model representing a list of users' friends"""
@@ -82,21 +83,11 @@ class FriendInvitation(models.Model):
 
     def accept(self):
         """Accept a friend request"""
-
-        receiver_friend_list = FriendList.objects.get(user=self.receiver)
-        sender_friend_list = FriendList.objects.get(user=self.sender)
-
-        try:
-            receiver_friend_list = FriendList.objects.get(user=self.receiver)
-            sender_friend_list = FriendList.objects.get(user=self.sender)
-        except:
-            # TODO: Error handling
-            pass
-
-        receiver_friend_list.add_friend(self.sender)
-        sender_friend_list.add_friend(self.receiver)
-        self.status = self.Status.ACCEPTED
-        self.save()
+        if self.receiver.friendlist.make_friends(self.sender):
+            self.status = self.Status.ACCEPTED
+            self.save()
+            return True
+        return False
 
     def decline(self):
         """Decline a friend request"""

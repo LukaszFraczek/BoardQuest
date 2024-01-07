@@ -16,12 +16,17 @@
 {% block user_card %}
     {% if friend_list.user == request.user %}
         <div class="col-auto text-center">
-            <a class="btn btn-secondary btn-icon-split" href="{% url 'friends:remove-friend' user.id %}">
-                <span class="icon text-white-50">
-                    <i class="fas fa-user-times"></i>
-                </span>
-                <span class="text">Remove Friend</span>
-            </a>
+            <form method="post" action="{% url 'friends:remove-friend' %}">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="btn btn-secondary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-user-times"></i>
+                    </span>
+                    <span class="text">Remove Friend</span>
+                </button>
+            </form>
         </div>
     {% endif %}
 {% endblock user_card %}
