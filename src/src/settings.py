@@ -49,6 +49,7 @@ PROJECT_APPS = [
     'users_settings',
     'homepage',
     'friends',
+    'boardgames',
 ]
 
 OTHER_APPS = [

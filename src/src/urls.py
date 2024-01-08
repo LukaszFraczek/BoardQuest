@@ -14,6 +14,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('homepage.urls')),
     path('', include('friends.urls')),
+    path('', include('boardgames.urls')),
 ]
 
 handler404 = 'homepage.views.handling_404'
