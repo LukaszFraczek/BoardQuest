@@ -1,0 +1,39 @@
+{% extends 'friends/common.html' %}
+{% load static %}
+
+{% block title %}
+    Received invites
+{% endblock title %}
+
+{% block page_heading %}
+    Received invites
+{% endblock page_heading %}
+
+{% block user_card %}
+    <div class="col-auto text-center mb-2">
+        <form method="post" action="{% url 'friends:invitations:accept' %}">
+            {% csrf_token %}
+            <input type="hidden" name="invitation_id" value="{{ user.invitation_id }}">
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="btn btn-success btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                </span>
+                <span class="text">Accept</span>
+            </button>
+        </form>
+    </div>
+    <div class="col-auto text-center">
+        <form method="post" action="{% url 'friends:invitations:decline' %}">
+            {% csrf_token %}
+            <input type="hidden" name="invitation_id" value="{{ user.invitation_id }}">
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="btn btn-danger btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-times"></i>
+                </span>
+                <span class="text">Decline</span>
+            </button>
+        </form>
+    </div>
+{% endblock user_card %}

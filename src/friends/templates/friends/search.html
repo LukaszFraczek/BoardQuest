@@ -1,0 +1,25 @@
+{% extends 'friends/common.html' %}
+{% load static %}
+
+{% block title %}
+    Friend search
+{% endblock title %}
+
+{% block page_heading %}
+    Friend search
+{% endblock page_heading %}
+
+{% block before_list %}
+    <div class="row mb-4">
+        <form method="get" action="{% url 'friends:search' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
+            <div class="input-group">
+                <input type="text" name="username" id="username" value="{{ request.GET.username }}" class="form-control bg-white border-2 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock before_list %}
