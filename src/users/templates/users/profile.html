@@ -24,16 +24,16 @@
                             <div class="row">
                                 <!-- Image -->
                                 <div class="col-lg-3 col-md-3 col-sm-4">
-                                    <img class="img-profile rounded-circle img-fluid" src="{{ user.profile.image.url|default:'/media/profile_pics/default.jpg' }}">
+                                    <img class="img-profile rounded-circle img-fluid" src="{{ object.image.url }}">
                                 </div>
                                 <!-- Name & about -->
                                 <div class="col-lg-9 col-md-9 col-sm-8">
                                     <div class="row ">
-                                        <h3 class="m-0 font-weight-bold text-primary">{{ user.username }}</h3>
+                                        <h3 class="m-0 font-weight-bold text-primary">{{ object.user.username }}</h3>
                                     </div>
                                     <hr class="my-2">
                                     <div class="row">
-                                        <p class="mb-4">{{ user.profile.about_me }}</p>
+                                        <p class="mb-4">{{ object.about_me }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -79,27 +79,27 @@
                     <!-- Friends -->
                     <div class="card mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Friends</h6>
+                            <a href="{% url 'friends:list' object.user.id %}">
+                                <h6 class="m-0 font-weight-bold text-primary">Friends</h6>
+                            </a>
                         </div>
                         <div class="card-body">
                             <!-- Friend row TODO: Show some friends -->
-                            <div class="row">
-                                <div class="col-lg-3 col-ms-3 col-sm-3">
-                                    <img class="img-profile rounded-circle img-fluid" src="{{ '/media/profile_pics/default.jpg' }}">
+                            {% for friend in friends %}
+                                <div class="row">
+                                    <div class="col-lg-3 col-ms-3 col-sm-3">
+                                        <img class="img-profile rounded-circle img-fluid" src="{{ friend.profile.image.url }}">
+                                    </div>
+                                    <div class="col-lg-9 col-ms-9 col-sm-9">
+                                        <a href="{% url 'users:profile' friend.id %}">
+                                            <p class="text-lg mb-0">{{ friend.username }}</p>
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="col-lg-9 col-ms-9 col-sm-9">
-                                    <p class="text-lg mb-0">{{ user.username }}</p>
-                                </div>
-                            </div>
-                            <hr/>
-                            <div class="row">
-                                <div class="col-lg-3 col-ms-3 col-sm-3">
-                                    <img class="img-profile rounded-circle img-fluid" src="{{ '/media/profile_pics/default.jpg' }}">
-                                </div>
-                                <div class="col-lg-9 col-ms-9 col-sm-9">
-                                    <p class="text-lg mb-0">{{ user.username }}</p>
-                                </div>
-                            </div>
+                                {% if not forloop.last %}
+                                    <hr/>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

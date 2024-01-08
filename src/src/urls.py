@@ -8,12 +8,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-import homepage.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('user/', include('users.urls')),
+    path('', include('users.urls')),
     path('', include('homepage.urls')),
+    path('', include('friends.urls')),
 ]
 
 handler404 = 'homepage.views.handling_404'

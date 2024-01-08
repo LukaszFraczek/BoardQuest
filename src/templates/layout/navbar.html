@@ -1,19 +1,22 @@
 {% load static %}
 <nav class="navbar navbar-expand navbar-light bg-primary topbar mb-4 static-top shadow">
-    <a class="navbar-brand text-white" href="{% url 'homepage' %}">BoardQuest</a>
+    <a class="navbar-brand text-white" href="{% url 'homepage:homepage' %}">BoardQuest</a>
 
     <div class="collapse navbar-collapse">
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                     Friends
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'homepage' %}">My friends</a>  <!-- TODO -->
-                    <a class="dropdown-item" href="{% url 'homepage' %}">Invites</a>  <!-- TODO -->
-                    <a class="dropdown-item" href="{% url 'homepage' %}">Search</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="{% url 'friends:list' user.id %}">My friends</a>
+                    <a class="dropdown-item" href="{% url 'friends:search' %}">Search</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'friends:invitations:received' %}">Received invites</a>
+                    <a class="dropdown-item" href="{% url 'friends:invitations:sent' %}">Sent invites</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -21,11 +24,11 @@
                     Games
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'homepage' %}">My games</a>  <!-- TODO -->
-                    <a class="dropdown-item" href="{% url 'homepage' %}">Add games</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="#">My games</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="#">Add games</a>  <!-- TODO -->
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'homepage' %}">My sessions</a>  <!-- TODO -->
-                    <a class="dropdown-item" href="{% url 'homepage' %}">New session</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="#">My sessions</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="#">New session</a>  <!-- TODO -->
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -33,13 +36,14 @@
                     Account
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'user-profile' %}">Profile</a>
-                    <a class="dropdown-item" href="{% url 'user-profile' %}">Settings</a>
+                    <a class="dropdown-item" href="{% url 'users:profile' user.id %}">Profile</a>
+                    <a class="dropdown-item" href="{% url 'users:settings:general' %}">Settings</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'homepage' %}">Achievements</a>  <!-- TODO -->
-                    <a class="dropdown-item" href="{% url 'homepage' %}">Rankings</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="#">Achievements</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="#">Rankings</a>  <!-- TODO -->
                 </div>
             </li>
+            {% endif %}
         </ul>
 
         <ul class="navbar-nav ml-auto">
@@ -58,11 +62,11 @@
                     <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                         aria-labelledby="userDropdown">
                         <!-- Profile -->
-                        <a class="dropdown-item" href="{% url 'user-profile' %}">
+                        <a class="dropdown-item" href="{% url 'users:profile' user.id %}">
                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                             Profile
                         </a>
-                        <a class="dropdown-item" href="{% url 'user-settings' %}">
+                        <a class="dropdown-item" href="{% url 'users:settings:general' %}">
                             <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                             Settings
                         </a>
@@ -76,12 +80,12 @@
                 </li>
             {% else %}
                 <li class="nav-item mx-1">
-                    <a href="{% url 'user-login' %}" class="btn btn-primary btn-user btn-rounded">
+                    <a href="{% url 'users:login' %}" class="btn btn-primary btn-user btn-rounded">
                         Login
                     </a>
                 </li>
                 <li class="nav-item mx-1">
-                    <a href="{% url 'user-register' %}" class="btn btn-primary btn-user btn-block">
+                    <a href="{% url 'users:register' %}" class="btn btn-primary btn-user btn-block">
                         Register
                     </a>
                 </li>
@@ -107,7 +111,7 @@
             <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <form id="logout-form" method="post" action="{% url 'user-logout' %}">
+                <form id="logout-form" method="post" action="{% url 'users:logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">Logout</button>
                 </form>

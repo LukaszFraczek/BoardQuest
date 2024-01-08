@@ -1,24 +1,30 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import (
     UserRegisterView,
     UserLoginView,
     UserLogoutView,
     ProfileView,
-    SettingsView,
-    SettingsUsernameView,
-    SettingsEmailView,
-    SettingsPasswordView,
 )
 
+NAMESPACE = 'users'
+URL_PREFIX = 'users/'
+
+
+patterns = [
+    path('register/', UserRegisterView.as_view(), name='register'),
+    path('login/', UserLoginView.as_view(), name='login'),
+    path('logout/', UserLogoutView.as_view(), name='logout'),
+    path('profile/<int:user_id>/', ProfileView.as_view(), name='profile'),
+]
+
+all_patterns = [
+    path(f'{URL_PREFIX}', include(patterns)),
+    path('', include('users_settings.urls')),
+]
+
+namespace_patterns = (all_patterns, NAMESPACE)
 
 urlpatterns = [
-    path('register/', UserRegisterView.as_view(), name='user-register'),
-    path('login/', UserLoginView.as_view(), name='user-login'),
-    path('logout/', UserLogoutView.as_view(), name='user-logout'),
-    path('profile/', ProfileView.as_view(), name='user-profile'),
-    path('settings/', SettingsView.as_view(), name='user-settings'),
-    path('settings/username/', SettingsUsernameView.as_view(), name='settings-username'),
-    path('settings/email/', SettingsEmailView.as_view(), name='settings-email'),
-    path('settings/password/', SettingsPasswordView.as_view(), name='settings-password'),
+    path('', include(namespace_patterns)),
 ]

@@ -1,0 +1,87 @@
+{% extends 'layout/base.html' %}
+
+{% load friends_filters %}
+
+{% block content %}
+<div class="col-lg-12">
+
+    {% block before_list %}
+    {% endblock before_list %}
+
+    <!-- Friends row -->
+    <div class="row align-items-stretch">
+        {% for user in users %}
+            {% if forloop.counter0|divisibleby:4 %}
+                </div><div class="row mb-4">
+            {% endif %}
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <!-- Profile Info -->
+                <div class="card shadow h-100">
+                    <div class="card-body d-flex flex-column m-1">
+                        <a href="{% url 'users:profile' user.id %}">
+                            <img class="img-profile rounded-circle img-fluid mb-3" src="{{ user.profile.image.url }}">
+                            <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">{{ user.username }}</h2>
+                        </a>
+                        {% block user_card %}
+                            {% if user.id == request.user.id %}  {# Exclude current user #}
+                                <p class="text-center">This is you!</p>
+                            {% elif request.user|is_friend:user %} {# Exclude friends #}
+                                <p class="text-center">This user is already your friend</p>
+                                <div class="col-auto text-center">
+                                    <a class="btn btn-primary btn-icon-split" href="{% url "friends:list" request.user.id %}">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-user-friends"></i>
+                                        </span>
+                                        <span class="text">Friend List</span>
+                                    </a>
+                                </div>
+                            {% else %}
+                                {% if request.user|invite_pending:user %} {# Check for pending invitation #}
+                                    <p class="text-center">Pending invite from this user!</p>
+                                    <div class="col-auto text-center">
+                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends:invitations:received" %}">
+                                            <span class="icon text-white-50">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </span>
+                                            <span class="text">Check invites</span>
+                                        </a>
+                                    </div>
+                                {% elif user|invite_pending:request.user %} {# Check for sent invitation #}
+                                    <p class="text-center">Invite already sent to this user!</p>
+                                    <div class="col-auto text-center">
+                                        <a class="btn btn-primary btn-icon-split" href="{% url "friends:invitations:sent" %}">
+                                            <span class="icon text-white-50">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </span>
+                                            <span class="text">Check invites</span>
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="col-auto text-center">
+                                        <p>Not a friend yet...</p>
+                                        <form method="post" action="{% url 'friends:invitations:create' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="btn btn-success btn-icon-split">
+                                                <span class="icon text-white-50">
+                                                    <i class="fas fa-user-plus"></i>
+                                                </span>
+                                                <span class="text">Invite</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endblock user_card %}
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+<!-- End of row -->
+
+</div>
+{% endblock content %}
