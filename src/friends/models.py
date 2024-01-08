@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from icecream import ic
 
 class FriendList(models.Model):
     """Model representing a list of users' friends"""
