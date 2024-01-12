@@ -17,6 +17,11 @@
         <form method="get" action="{% url 'boardgames:search' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
             <div class="input-group">
                 <input type="text" name="name" id="name" value="{{ name }}" class="form-control bg-white border-2 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <select name="name_type" class="form-control">
+                    <option value="all">All</option>
+                    <option value="primary">Primary</option>
+                    <option value="alternate">Alternate</option>
+                </select>
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search fa-sm"></i>
@@ -37,7 +42,6 @@
                 <div class="card shadow h-100">
                     <div class="card-body d-flex flex-column m-1">
                         <a>
-{#                            <img class="img-thumbnail rounded-pill img-fluid mb-3" src="{{ boardgame.thumbnail.0.0 }}">#}
                             {{ boardgame.id }}
                             {{ boardgame.name }}
                             <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill"></h2>
