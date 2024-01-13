@@ -7,10 +7,13 @@ class BoardGame(models.Model):
 
     bgg_id = models.IntegerField(null=False, blank=False)
     name = models.TextField(null=False, blank=False)
+    description_short = models.TextField(null=True)
     description = models.TextField(null=True)
     release_date = models.DateTimeField(null=True)
     players_min = models.IntegerField(null=True)
     players_max = models.IntegerField(null=True)
+    playtime_min = models.IntegerField(null=True)
+    playtime_max = models.IntegerField(null=True)
     image = models.URLField(null=True)
     thumbnail = models.URLField(null=True)
     average_rating = models.FloatField(null=True)
