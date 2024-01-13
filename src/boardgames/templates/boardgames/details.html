@@ -6,9 +6,83 @@
 {% endblock title %}
 
 {% block page_heading %}
-    Board game search
+    Game details
 {% endblock page_heading %}
 
 {% block content %}
+<div class="col-lg-12">
 
+    <!-- Game Info row -->
+    <div class="row align-items-stretch">
+        <div class="col-md-9 mb-3">
+            <!-- Game Info -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Image -->
+                        <div class="col-lg-3 col-md-3 col-sm-4">
+                            <img class="img-fluid" src="{{ details.image_url }}">
+                        </div>
+                        <!-- Name & details -->
+                        <div class="col-lg-9 col-md-9 col-sm-8">
+                            <h3 class="m-0 font-weight-bold text-primary">{{ details.primary_name }}</h3>
+                            <h6 class="m-0 font-weight-bold text-secondary">{{ details.release_year }}</h6>
+                            <hr class="my-2">
+                            <p class="mb-1">short description (if any)</p>
+                            <hr class="my-2">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h6 class="m-0 font-weight-bold text-secondary">{{ details.min_players }}-{{ details.max_players }} Players</h6>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6 class="m-0 font-weight-bold text-secondary">{{ details.min_playtime }}-{{ details.max_playtime }} Min</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <!-- Supplementary links -->
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <a class="btn btn-success btn-sm w-100" href="#">
+                        <span class="text text-truncate">Add to my games</span>
+                    </a>
+                    <div class="my-2"></div>
+                    <a class="btn btn-primary btn-sm w-100" href="#">
+                        <span class="text text-truncate">All achievements</span>
+                    </a>
+                    <div class="my-2"></div>
+                    <a class="btn btn-primary btn-sm w-100" href="#">
+                        <span class="text text-truncate">Check on BGG</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of row -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Supplementary links -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="m-0 font-weight-bold text-secondary">Description</h4>
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="row">
+                        <div class="col">
+                            <p>{{ details.description|safe }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock content %}

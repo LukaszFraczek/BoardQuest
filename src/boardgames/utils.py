@@ -75,4 +75,52 @@ class BGGSearch:
 
 
 class BGGItemDetails:
-    pass
+    @staticmethod
+    def __clean_items_response(response):
+        # Parse the XML response
+        root = ElementTree.fromstring(response.content)
+
+        # Extract game details
+        item = root.find('.//item')
+
+        game_id = item.get('id')
+        thumbnail_url = item.find('./thumbnail').text.strip()
+        image_url = item.find('./image').text.strip()
+        primary_name = item.find('./name[@type="primary"]').get('value')
+        release_year = item.find('./yearpublished').get('value')
+        description = item.find('./description').text.strip()
+        min_players = item.find('./minplayers').get('value')
+        max_players = item.find('./maxplayers').get('value')
+        min_playtime = item.find('./minplaytime').get('value')
+        max_playtime = item.find('./maxplaytime').get('value')
+
+        details = ({
+            'id': game_id,
+            'thumbnail_url': thumbnail_url,
+            'image_url': image_url,
+            'primary_name': primary_name,
+            'release_year': release_year,
+            'description': description.replace("&#10;", "<br>"),
+            'min_players': min_players,
+            'max_players': max_players,
+            'min_playtime': min_playtime,
+            'max_playtime': max_playtime,
+        })
+
+        ic(details)
+
+        return details
+
+    @classmethod
+    def fetch_item(cls, bgg_id):
+        params = {'id': bgg_id}
+        response = requests.get(f"{BGG_API_URL}/thing/", params=params)
+
+        ic("details call to BGG")
+        ic(response)
+
+        if response.status_code == HTTPStatus.OK:
+            return cls.__clean_items_response(response)
+        else:
+            print(f"BGG fetch items details request error: {response.status_code}")
+            return None

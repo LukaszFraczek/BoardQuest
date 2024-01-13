@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
+
 
 from .models import BoardGame
-from .utils import BGGSearch
+from .utils import BGGSearch, BGGItemDetails
 
 from icecream import ic
 
@@ -30,7 +30,15 @@ class BoardgameSearchView(LoginRequiredMixin, ListView):
         return context
 
 
-class BoardgameBGGDetailView(DetailView):
+class BoardgameBGGDetailView(TemplateView):
     template_name = 'boardgames/details.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        bgg_id = self.kwargs.get('bgg_id')
 
+        if bgg_id:
+            details = BGGItemDetails.fetch_item(bgg_id)
+            context['details'] = details
+
+        return context
