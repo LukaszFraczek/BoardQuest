@@ -1,0 +1,120 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}
+    Board game search
+{% endblock title %}
+
+{% block page_heading %}
+    Game details
+{% endblock page_heading %}
+
+{% block content %}
+<div class="col-lg-12">
+
+    <!-- Game Info row -->
+    <div class="row align-items-stretch">
+        <div class="col-md-9 mb-3">
+            <!-- Game Info -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Image -->
+                        <div class="col-lg-3 col-md-3 col-sm-4">
+                            <img class="img-fluid" src="{{ details.image_url }}">
+                        </div>
+                        <!-- Name & details -->
+                        <div class="col-lg-9 col-md-9 col-sm-8">
+                            <h3 class="m-0 font-weight-bold text-primary">{{ details.primary_name }}</h3>
+                            {% if details.release_year %}
+                                <h6 class="m-0 font-weight-bold text-secondary">{{ details.release_year }}</h6>
+                            {% else %}
+                                <h6 class="m-0 font-weight-bold text-secondary">Unspecified</h6>
+                            {% endif %}
+                            <hr class="my-2">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h6 class="m-0 font-weight-bold text-secondary">{{ details.players_min }}-{{ details.players_max }} Players</h6>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6 class="m-0 font-weight-bold text-secondary">{{ details.playtime_min }}-{{ details.playtime_max }} Min</h6>
+                                </div>
+                            </div>
+                            <div class="my-4"></div>
+                            {% if users_amount %}
+                            <div class="card bg-warning">
+                                <div class="card-body text-gray-900">
+                                    {% if user_sent_request and users_amount == 1 %}
+                                        You requested this game to be added!
+                                    {% elif user_sent_request and users_amount == 2 %}
+                                        This game was requested by you and 1 other user!
+                                    {% elif user_sent_request and users_amount > 2 %}
+                                        This game was requested by you and {{ users_amount|add:-1 }} other users!
+                                    {% elif users_amount == 1 %}
+                                        This game was requested by 1 user!
+                                    {% else %}
+                                        This game was requested by {{ users_amount }} users!
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <!-- Supplementary links -->
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    {% if user_sent_request %}
+                    <form method="post" action="{% url 'boardgames:request_cancel' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <input type="hidden" name="request_id" value="{{ request_id }}">
+                        <button type="submit" class="btn btn-warning btn-sm w-100">
+                            <span class="text text-truncate">Cancel request</span>
+                        </button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'boardgames:request_create' %}">
+                        {% csrf_token %}
+                        {{ form }}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="btn btn-success btn-sm w-100">
+                            <span class="text text-truncate">Request game to be added</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <div class="my-2"></div>
+                    <a class="btn btn-primary btn-sm w-100" href="{{ bgg_detail_url|add:details.bgg_id }}">
+                        <span class="text text-truncate">Check on BGG</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of row -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Supplementary links -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="m-0 font-weight-bold text-secondary">Description</h4>
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="row">
+                        <div class="col">
+                            <p>{{ details.description|safe }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

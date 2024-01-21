@@ -24,8 +24,9 @@
                     Games
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">My games</a>  <!-- TODO -->
-                    <a class="dropdown-item" href="{% url 'boardgames:search' %}">Add games</a>
+                    <a class="dropdown-item" href="#">My collection</a>  <!-- TODO -->
+                    <a class="dropdown-item" href="{% url 'boardgames:browse_games' %}">Browse games</a>
+                    <a class="dropdown-item" href="{% url 'boardgames:request_games' %}">Request new games</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">My sessions</a>  <!-- TODO -->
                     <a class="dropdown-item" href="#">New session</a>  <!-- TODO -->

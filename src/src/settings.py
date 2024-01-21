@@ -154,3 +154,14 @@ LOGIN_REDIRECT_URL = 'homepage:homepage'
 LOGIN_URL = 'users:login'
 
 LOGOUT_REDIRECT_URL = 'homepage:homepage'
+
+
+# Other settings
+
+BGG_API_URL = 'https://www.boardgamegeek.com/xmlapi2'
+
+BGG_GAME_DETAIL_URL = 'https://boardgamegeek.com/boardgame/'
+
+SEARCH_CACHE_PERSISTENCE = 900
+
+DETAILS_CACHE_PERSISTENCE = 900

@@ -1,14 +1,19 @@
+from django.core.cache import cache
+from django.conf import settings
+from http import HTTPStatus
+
 import requests
 from xml.etree import ElementTree
 
 from icecream import ic
 
-BGG_API_URL = 'https://www.boardgamegeek.com/xmlapi2'
-SEARCH_CACHE_PERSISTENCE = 300
-
 
 def get_search_key(query: str) -> str:
     return f'bgg_search_{query}'
+
+
+def get_item_details_key(bgg_id: int) -> str:
+    return f'bgg_item_{bgg_id}'
 
 
 class BGGSearch:
@@ -23,10 +28,14 @@ class BGGSearch:
             game_id = item.get('id')
             name = item.find('./name').get('value')
             name_type = item.find('./name').get('type')
-            release_year = item.find('./yearpublished').get('value')
+            release_year_element = item.find('./yearpublished')
+            if release_year_element is not None:
+                release_year = release_year_element.get('value')
+            else:
+                release_year = 'Unspecified'
 
             games.append({
-                'id': game_id,
+                'bgg_id': game_id,
                 'name': name,
                 'name_type': name_type,
                 'release_year': release_year,
@@ -49,6 +58,8 @@ class BGGSearch:
 
     @classmethod
     def fetch_items(cls, name, name_type):
+        name = name.lower()
+
         # First check if data is already in cache
         cache_key = get_search_key(name)
         cached_data = cache.get(cache_key)
@@ -56,18 +67,16 @@ class BGGSearch:
         if cached_data is not None:
             return cls.__filter_response(cached_data, name_type)
 
-        # Parameters for the search query
+        # Request to BGG API
         params = {'query': name, 'type': 'boardgame'}
-
-        # Make the request to the API
-        response = requests.get(f"{BGG_API_URL}/search", params=params)
+        response = requests.get(f"{settings.BGG_API_URL}/search", params=params)
 
         ic("search call to BGG")
         ic(response)
 
-        if response.status_code == 200:
+        if response.status_code == HTTPStatus.OK:
             clean_response = cls.__clean_items_response(response)
-            cache.set(cache_key, clean_response, SEARCH_CACHE_PERSISTENCE)
+            cache.set(cache_key, clean_response, settings.SEARCH_CACHE_PERSISTENCE)
             return cls.__filter_response(clean_response, name_type)
         else:
             print(f"BGG fetch items request error: {response.status_code}")
@@ -76,51 +85,58 @@ class BGGSearch:
 
 class BGGItemDetails:
     @staticmethod
-    def __clean_items_response(response):
+    def __clean_details_response(response):
         # Parse the XML response
         root = ElementTree.fromstring(response.content)
 
         # Extract game details
         item = root.find('.//item')
 
-        game_id = item.get('id')
+        bgg_id = item.get('id')
         thumbnail_url = item.find('./thumbnail').text.strip()
         image_url = item.find('./image').text.strip()
         primary_name = item.find('./name[@type="primary"]').get('value')
         release_year = item.find('./yearpublished').get('value')
         description = item.find('./description').text.strip()
-        min_players = item.find('./minplayers').get('value')
-        max_players = item.find('./maxplayers').get('value')
-        min_playtime = item.find('./minplaytime').get('value')
-        max_playtime = item.find('./maxplaytime').get('value')
+        players_min = item.find('./minplayers').get('value')
+        players_max = item.find('./maxplayers').get('value')
+        playtime_min = item.find('./minplaytime').get('value')
+        playtime_max = item.find('./maxplaytime').get('value')
 
         details = ({
-            'id': game_id,
+            'bgg_id': bgg_id,
             'thumbnail_url': thumbnail_url,
             'image_url': image_url,
             'primary_name': primary_name,
-            'release_year': release_year,
+            'release_year': release_year if release_year != 0 else None,
             'description': description.replace("&#10;", "<br>"),
-            'min_players': min_players,
-            'max_players': max_players,
-            'min_playtime': min_playtime,
-            'max_playtime': max_playtime,
+            'players_min': players_min,
+            'players_max': players_max,
+            'playtime_min': playtime_min,
+            'playtime_max': playtime_max,
         })
-
-        ic(details)
 
         return details
 
     @classmethod
-    def fetch_item(cls, bgg_id):
+    def fetch_item(cls, bgg_id: int):
+        # First check if data is already in cache
+        cache_key = get_item_details_key(bgg_id)
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            return cached_data
+
         params = {'id': bgg_id}
-        response = requests.get(f"{BGG_API_URL}/thing/", params=params)
+        response = requests.get(f"{settings.BGG_API_URL}/thing/", params=params)
 
         ic("details call to BGG")
         ic(response)
 
         if response.status_code == HTTPStatus.OK:
-            return cls.__clean_items_response(response)
+            clean_response = cls.__clean_details_response(response)
+            cache.set(cache_key, clean_response, settings.DETAILS_CACHE_PERSISTENCE)
+            return clean_response
         else:
             print(f"BGG fetch items details request error: {response.status_code}")
             return None

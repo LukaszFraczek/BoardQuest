@@ -21,21 +21,21 @@
                     <div class="row">
                         <!-- Image -->
                         <div class="col-lg-3 col-md-3 col-sm-4">
-                            <img class="img-fluid" src="{{ details.image_url }}">
+                            <img class="img-fluid" src="{{ object.image_url }}">
                         </div>
                         <!-- Name & details -->
                         <div class="col-lg-9 col-md-9 col-sm-8">
-                            <h3 class="m-0 font-weight-bold text-primary">{{ details.primary_name }}</h3>
-                            <h6 class="m-0 font-weight-bold text-secondary">{{ details.release_year }}</h6>
+                            <h3 class="m-0 font-weight-bold text-primary">{{ object.primary_name }}</h3>
+                            <h6 class="m-0 font-weight-bold text-secondary">{{ object.release_year }}</h6>
                             <hr class="my-2">
-                            <p class="mb-1">short description (if any)</p>
+                            <p class="mb-1">{{ object.description_short }}</p>
                             <hr class="my-2">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <h6 class="m-0 font-weight-bold text-secondary">{{ details.min_players }}-{{ details.max_players }} Players</h6>
+                                    <h6 class="m-0 font-weight-bold text-secondary">{{ object.players_min }}-{{ object.players_max }} Players</h6>
                                 </div>
                                 <div class="col-sm-6">
-                                    <h6 class="m-0 font-weight-bold text-secondary">{{ details.min_playtime }}-{{ details.max_playtime }} Min</h6>
+                                    <h6 class="m-0 font-weight-bold text-secondary">{{ object.playtime_min }}-{{ object.playtime_max }} Min</h6>
                                 </div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                         <span class="text text-truncate">All achievements</span>
                     </a>
                     <div class="my-2"></div>
-                    <a class="btn btn-primary btn-sm w-100" href="#">
+                    <a class="btn btn-primary btn-sm w-100" href="{{ bgg_detail_link|add:object.bgg_id }}">
                         <span class="text text-truncate">Check on BGG</span>
                     </a>
                 </div>
@@ -76,7 +76,7 @@
                     <hr class="my-2">
                     <div class="row">
                         <div class="col">
-                            <p>{{ details.description|safe }}</p>
+                            <p>{{ object.description|safe }}</p>
                         </div>
                     </div>
                 </div>
