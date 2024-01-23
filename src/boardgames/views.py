@@ -2,13 +2,19 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.dateparse import parse_date
-from django.views.generic import ListView, DetailView, TemplateView, View
-
+from django.views.generic import (
+    ListView,
+    DetailView,
+    UpdateView,
+    TemplateView,
+    View,
+)
 
 from .models import BoardGame, GameRequest
 from .bgg_api import BGGSearch, BGGItemDetails
-from .forms import GameRequestForm
+from .forms import GameRequestForm, RequestAcceptForm
 
 from icecream import ic
 
@@ -97,6 +103,19 @@ class RequestedBoardgamesView(LoginRequiredMixin, ListView):
         return queryset
 
 
+class AcceptedBoardgamesView(LoginRequiredMixin, ListView):
+    template_name = 'boardgames/accepted_games.html'
+    context_object_name = 'boardgames'
+    model = BoardGame
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = BoardGame.objects.filter(
+                status=BoardGame.Status.ACCEPTED,
+            )
+        return queryset
+
+
 class BoardgameDetailViewBGG(TemplateView):
     template_name = 'boardgames/details_bgg.html'
 
@@ -126,6 +145,7 @@ class BoardgameDetailViewBGG(TemplateView):
             if board_game_request.exists():
                 # check how many users request the game and append request id
                 users = board_game_request.first().users.all()
+                context['request_exist'] = True
                 context['users_amount'] = users.count()
                 context['request_id'] = board_game_request.first().id
 
@@ -159,7 +179,7 @@ class BoardgameDetailView(DetailView):
         return context
 
 
-class RequestCreateView(LoginRequiredMixin, View):
+class RequestCreateUpdateView(LoginRequiredMixin, View):
     def post(self, request):
         next_url = request.POST.get('next', 'boardgames:request_games')
         form = GameRequestForm(request.POST)
@@ -235,3 +255,44 @@ class RequestCancelView(LoginRequiredMixin, View):
             game_request.cancel()
 
         return HttpResponseRedirect(next_url)
+
+
+class RequestAcceptView(LoginRequiredMixin, View):
+    def post(self, request):
+        form = RequestAcceptForm(request.POST)
+        redirect_url = 'boardgames:accepted_games'
+
+        if form.is_valid():
+            game_id = form.cleaned_data['game_id']
+            request_id = form.cleaned_data['request_id']
+
+            game_request = get_object_or_404(GameRequest, id=request_id)
+            if not game_request.accept():
+                ic('Integrity error, request not accepted!')
+
+            redirect_url = reverse('boardgames:update', kwargs={'pk': game_id})
+
+        return HttpResponseRedirect(redirect_url)
+
+
+class UpdateBoardGameView(LoginRequiredMixin, UpdateView):
+    model = BoardGame
+    template_name = 'boardgames/update.html'
+    fields = [
+        'primary_name',
+        'description',
+        'description_short',
+        'release_year',
+        'players_min',
+        'players_max',
+        'playtime_min',
+        'playtime_max',
+        'image_url',
+        'thumbnail_url',
+    ]
+
+    def get_queryset(self):
+        # only accepted games allowed!
+        queryset = super().get_queryset()
+        queryset = queryset.filter(status=BoardGame.Status.ACCEPTED)
+        return queryset

@@ -12,3 +12,8 @@ class GameRequestForm(forms.Form):
     players_max = forms.CharField(widget=forms.HiddenInput)
     playtime_min = forms.CharField(widget=forms.HiddenInput)
     playtime_max = forms.CharField(widget=forms.HiddenInput)
+
+
+class RequestAcceptForm(forms.Form):
+    game_id = forms.IntegerField(widget=forms.HiddenInput)
+    request_id = forms.IntegerField(widget=forms.HiddenInput)

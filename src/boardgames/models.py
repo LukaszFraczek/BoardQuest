@@ -9,6 +9,7 @@ class BoardGame(models.Model):
 
     class Status(models.TextChoices):
         REQUESTED = "Req", _("Requested")
+        ACCEPTED = "Acc", _("Accepted")
         SUPPORTED = "Sup", _("Supported")
         REJECTED = "Rej", _("Rejected")
 
@@ -96,7 +97,7 @@ class GameRequest(models.Model):
 
         try:
             with transaction.atomic():
-                self.board_game.Status = BoardGame.Status.SUPPORTED
+                self.board_game.Status = BoardGame.Status.ACCEPTED
                 self.status = self.Status.ACCEPTED
                 self.save()
         except IntegrityError:

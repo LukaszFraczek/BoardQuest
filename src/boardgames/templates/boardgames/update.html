@@ -1,0 +1,26 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}
+    Board game search
+{% endblock title %}
+
+{% block page_heading %}
+    Game details
+{% endblock page_heading %}
+
+{% block content %}
+<div class="col-lg-12">
+
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                {{ form }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Post</button>
+            </div>
+        </form>
+
+</div>
+{% endblock content %}

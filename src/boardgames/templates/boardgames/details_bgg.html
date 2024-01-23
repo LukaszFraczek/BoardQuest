@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Board game search
+    Game details
 {% endblock title %}
 
 {% block page_heading %}
@@ -41,7 +41,7 @@
                                 </div>
                             </div>
                             <div class="my-4"></div>
-                            {% if users_amount %}
+                            {% if request_exist %}
                             <div class="card bg-warning">
                                 <div class="card-body text-gray-900">
                                     {% if user_sent_request and users_amount == 1 %}
@@ -86,8 +86,19 @@
                         </button>
                     </form>
                     {% endif %}
+                    {% if request_exist %}
                     <div class="my-2"></div>
-                    <a class="btn btn-primary btn-sm w-100" href="{{ bgg_detail_url|add:details.bgg_id }}">
+                    <form method="post" action="{% url 'boardgames:request_accept' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="game_id" value="{{ details.id }}">
+                        <input type="hidden" name="request_id" value="{{ request_id }}">
+                        <button type="submit" class="btn btn-success btn-sm w-100">
+                            <span class="text text-truncate">Accept request</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <div class="my-2"></div>
+                    <a class="btn btn-primary btn-sm w-100" href="{{ bgg_detail_url }}{{ details.bgg_id }}">
                         <span class="text text-truncate">Check on BGG</span>
                     </a>
                 </div>
