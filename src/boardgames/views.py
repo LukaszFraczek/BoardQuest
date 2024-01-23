@@ -10,8 +10,6 @@ from .models import BoardGame, GameRequest
 from .bgg_api import BGGSearch, BGGItemDetails
 from .forms import GameRequestForm
 
-import json
-
 from icecream import ic
 
 
@@ -23,12 +21,13 @@ class BrowseBoardgamesView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         name = self.request.GET.get('name')
-        queryset = []
+        queryset = BoardGame.objects.filter(
+                status=BoardGame.Status.SUPPORTED,
+            )
 
         if name:
-            queryset = BoardGame.objects.filter(
-                name__icontains=name,
-                status=BoardGame.Status.SUPPORTED,
+            queryset = queryset.filter(
+                primary_name__icontains=name,
             )
 
         return queryset
@@ -85,6 +84,19 @@ class RequestBoardgamesView(LoginRequiredMixin, ListView):
         return context
 
 
+class RequestedBoardgamesView(LoginRequiredMixin, ListView):
+    template_name = 'boardgames/requested_games.html'
+    context_object_name = 'boardgames'
+    model = BoardGame
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = BoardGame.objects.filter(
+                status=BoardGame.Status.REQUESTED,
+            )
+        return queryset
+
+
 class BoardgameDetailViewBGG(TemplateView):
     template_name = 'boardgames/details_bgg.html'
 
@@ -96,7 +108,10 @@ class BoardgameDetailViewBGG(TemplateView):
             return HttpResponseNotFound
 
         # check if boardgame is already in the db
-        board_game = BoardGame.objects.filter(bgg_id=bgg_id)
+        board_game = BoardGame.objects.filter(
+            bgg_id=bgg_id,
+            status=BoardGame.Status.REQUESTED
+        )
 
         if board_game.exists():
             details = board_game.values().first()
@@ -128,14 +143,19 @@ class BoardgameDetailViewBGG(TemplateView):
         return context
 
 
-class BoardgameDetailView(TemplateView):
+class BoardgameDetailView(DetailView):
     template_name = 'boardgames/details.html'
     model = BoardGame
 
+    def get_queryset(self):
+        # display only supported games!
+        queryset = super().get_queryset()
+        queryset = queryset.filter(status=BoardGame.Status.SUPPORTED)
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['bgg_detail_link'] = settings.BGG_GAME_DETAIL_URL
-
+        context['bgg_detail_url'] = settings.BGG_GAME_DETAIL_URL
         return context
 
 
