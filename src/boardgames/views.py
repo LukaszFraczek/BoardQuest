@@ -56,6 +56,7 @@ class RequestBoardgamesView(LoginRequiredMixin, ListView):
 
         if name:
             queryset = BGGSearch.fetch_items(name, name_type)
+            # TODO: remove all games that are already supported!
 
         return queryset
 
@@ -180,37 +181,52 @@ class BoardgameDetailView(DetailView):
 
 
 class RequestCreateUpdateView(LoginRequiredMixin, View):
+    ALLOWED_STATUSES = (
+        BoardGame.Status.REQUESTED,
+        BoardGame.Status.REJECTED,
+    )
+
+    def create_new_game(self, form) -> BoardGame:
+        game = BoardGame.objects.create(
+            status=BoardGame.Status.REQUESTED,
+            bgg_id=form.cleaned_data['bgg_id'],
+            primary_name=form.cleaned_data['primary_name'],
+            description=form.cleaned_data['description'],
+            release_year=parse_date(form.cleaned_data['release_year']),
+            players_min=form.cleaned_data['players_min'],
+            players_max=form.cleaned_data['players_max'],
+            playtime_min=form.cleaned_data['playtime_min'],
+            playtime_max=form.cleaned_data['playtime_max'],
+            image_url=form.cleaned_data['image_url'],
+            thumbnail_url=form.cleaned_data['thumbnail_url'],
+        )
+        return game
+
+    def create_new_game_request(self, game) -> GameRequest:
+        game_request = GameRequest.objects.create(
+            status=GameRequest.Status.PENDING,
+            board_game=game,
+        )
+        return game_request
+
     def post(self, request):
         next_url = request.POST.get('next', 'boardgames:request_games')
         form = GameRequestForm(request.POST)
 
         if form.is_valid():
-            ic(form.cleaned_data)
-
-            bgg_id = form.cleaned_data['bgg_id']
             requesting_user = self.request.user
 
-            game = BoardGame.objects.filter(bgg_id=bgg_id).first()
+            game = BoardGame.objects.filter(
+                bgg_id=form.cleaned_data['bgg_id']
+            ).first()
 
             if not game:
-                # If game not in DB, add it
                 ic('Creating new game object...')
-                game = BoardGame.objects.create(
-                    status=BoardGame.Status.REQUESTED,
-                    bgg_id=bgg_id,
-                    primary_name=form.cleaned_data['primary_name'],
-                    description=form.cleaned_data['description'],
-                    release_year=parse_date(form.cleaned_data['release_year']),
-                    players_min=form.cleaned_data['players_min'],
-                    players_max=form.cleaned_data['players_max'],
-                    playtime_min=form.cleaned_data['playtime_min'],
-                    playtime_max=form.cleaned_data['playtime_max'],
-                    image_url=form.cleaned_data['image_url'],
-                    thumbnail_url=form.cleaned_data['thumbnail_url'],
-                )
-            elif game.status == BoardGame.Status.SUPPORTED:
-                # if game supported, gtfo
-                ic('Game exists and is supported!')
+                game = self.create_new_game(form)
+
+            elif game.status not in self.ALLOWED_STATUSES:
+                # this is done to prevent creating new requests when game is supported or in review
+                ic('Game exists and its status except it from proceeding')
                 return HttpResponseRedirect(next_url)
 
             game_request = GameRequest.objects.filter(
@@ -221,17 +237,14 @@ class RequestCreateUpdateView(LoginRequiredMixin, View):
             if not game_request:
                 # for cases where previous requests were rejected (game in db but no request)
                 ic('Creating request...')
-                game_request = GameRequest.objects.create(
-                    status=GameRequest.Status.PENDING,
-                    board_game=game,
-                )
+                game_request = self.create_new_game_request(game)
 
             ic(requesting_user, game_request.users.all())
             if requesting_user not in game_request.users.all():
                 ic('Adding user to request...')
                 game_request.users.add(requesting_user, through_defaults={})
         else:
-            print(form.errors)
+            ic(form.errors)
 
         return HttpResponseRedirect(next_url)
 
