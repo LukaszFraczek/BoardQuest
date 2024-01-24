@@ -97,7 +97,7 @@ class GameRequest(models.Model):
 
         try:
             with transaction.atomic():
-                self.board_game.Status = BoardGame.Status.ACCEPTED
+                self.board_game.status = BoardGame.Status.ACCEPTED
                 self.status = self.Status.ACCEPTED
                 self.save()
         except IntegrityError:
