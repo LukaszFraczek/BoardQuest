@@ -9,7 +9,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('homepage.urls')),
     path('', include('friends.urls')),
-    path('', include('boardgames.urls')),
+    path('', include('games.urls')),
 ]
 
 handler404 = 'homepage.views.handling_404'

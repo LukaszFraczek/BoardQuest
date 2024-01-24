@@ -2,11 +2,58 @@
 {% load static %}
 
 {% block title %}
-    Browse games
+    Request games
 {% endblock title %}
 
+{% block styles %}
+<style>
+    .slanted-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .slanted-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10%;
+        height: 100%;
+        background-color: #ffdf4f; /* You can set the background color to match your design */
+        transform: skew(45deg); /* Adjust the skew angle as needed */
+        transform-origin: top right;
+        z-index: 0;
+    }
+
+    .tooltip-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10%;
+        height: 50%;
+        transform: skew(45deg); /* Adjust the skew angle as needed */
+        transform-origin: top;
+        z-index: 1; /* Place the tooltip container above the slanted section */
+    }
+
+    .tooltip-inner {
+        background-color: #ffdf4f; /* Set your desired background color */
+        color: #000000; /* Set the text color */
+        text-align: center;
+        border-radius: 5px; /* Optional: Add rounded corners */
+    }
+    .tooltip.bs-tooltip-bottom .arrow:before {
+        border-bottom-color: #ffdf4f !important;
+    }
+    .tooltip.bs-tooltip-top .arrow:before {
+        border-top-color: #ffdf4f !important;
+    }
+
+</style>
+{% endblock styles %}
+
 {% block page_heading %}
-    Browse games
+    Request games
 {% endblock page_heading %}
 
 {% block content %}
@@ -14,9 +61,14 @@
 
     <!-- Search -->
     <div class="row mb-4">
-        <form method="get" action="{% url 'boardgames:browse_games' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
+        <form method="get" action="{% url 'games:request_games' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
             <div class="input-group">
                 <input type="text" name="name" id="name" value="{{ name }}" class="form-control bg-white border-2 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <select name="name_type" class="form-control">
+                    <option value="all">All</option>
+                    <option value="primary">Primary</option>
+                    <option value="alternate">Alternate</option>
+                </select>
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search fa-sm"></i>
@@ -28,31 +80,32 @@
 
     <!-- Results -->
     <div class="row align-items-stretch">
-        {% for boardgame in boardgames %}
+        {% for game in games %}
             {% if forloop.counter0|divisibleby:2 %}
                 </div><div class="row align-items-stretch">
             {% endif %}
             <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
                 <!-- Game Info -->
-                <div class="card shadow h-100 slanted-card">
+                <div class="card shadow h-100 {% if game.game_request %}slanted-card{% endif %}">
                     <div class="card-body d-flex flex-column m-1">
-                        <a href="{% url 'boardgames:details' boardgame.id %}">
-                            <h5 class="mb-2 font-weight-bold text-primary text-truncate flex-fill">{{ boardgame.primary_name }}</h5>
-                            <h6 class="mb-2 text-secondary text-truncate flex-fill">{{ boardgame.release_year }}</h6>
+                        <a href="{% url 'games:details_bgg' game.bgg_id %}">
+                            <h5 class="mb-2 font-weight-bold text-primary text-truncate flex-fill">{{ game.name }}</h5>
+                            {% if details.release_year != '0' %}
+                                <h6 class="mb-2 text-secondary text-truncate flex-fill">{{ game.release_year }}</h6>
+                            {% else %}
+                                <h6 class="mb-2 text-secondary text-truncate flex-fill">Unknown release date</h6>
+                            {% endif %}
                         </a>
+                        {% if game.game_request %}
+                        <div class="tooltip-container" data-toggle="tooltip" data-placement="top" title="This game is requested to be added by community!">&nbsp;</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         {% empty %}
-                <div class="col-12 text-center">
-                    <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">
-                        No results found?
-                    </h2>
-                    <div class="my-2"></div>
-                    <a class="btn btn-primary" href="{% url 'boardgames:request_games' %}?name={{ name }}">
-                        <span class="text text-truncate">Try requesting your game!</span>
-                    </a>
-                </div>
+            <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">
+                No results found!
+            </h2>
         {% endfor %}
     </div>
     <!-- End of results -->
@@ -61,7 +114,7 @@
     {% if page_obj.has_other_pages %}
         <div class="pagination justify-content-center mt-4">
             <span class="step-links">
-                {% with url='name='|add:name %}
+                {% with url='name='|add:name|add:'&name_type='|add:name_type %}
                 {% if page_obj.has_previous %}
                     <a class="btn btn-outline-primary btn-circle mb-4" href="?{{ url }}&page=1">
                         <i class="fas fa-caret-left"></i><i class="fas fa-caret-left"></i>&#160
@@ -94,3 +147,11 @@
 </div>
 {% endblock content %}
 
+{% block script %}
+<script>
+    // Enable Bootstrap tooltips only on slanted section
+    $(document).ready(function(){
+        $('.slanted-card [data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock script %}

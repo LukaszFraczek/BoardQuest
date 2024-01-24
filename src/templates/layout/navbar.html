@@ -25,8 +25,8 @@
                 </a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="#">My collection</a>  <!-- TODO -->
-                    <a class="dropdown-item" href="{% url 'boardgames:browse_games' %}">Browse games</a>
-                    <a class="dropdown-item" href="{% url 'boardgames:request_games' %}">Request new games</a>
+                    <a class="dropdown-item" href="{% url 'games:browse_games' %}">Browse games</a>
+                    <a class="dropdown-item" href="{% url 'games:request_games' %}">Request new games</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">My sessions</a>  <!-- TODO -->
                     <a class="dropdown-item" href="#">New session</a>  <!-- TODO -->
@@ -49,8 +49,8 @@
                     Manage
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'boardgames:requested_games' %}">Requested games</a>
-                    <a class="dropdown-item" href="{% url 'boardgames:accepted_games' %}">Accepted games</a>
+                    <a class="dropdown-item" href="{% url 'games:requested_games' %}">Requested games</a>
+                    <a class="dropdown-item" href="{% url 'games:accepted_games' %}">Accepted games</a>
                 </div>
             </li>
             {% endif %}

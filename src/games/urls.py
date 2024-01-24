@@ -14,8 +14,8 @@ from .views import (
 )
 
 
-NAMESPACE = 'boardgames'
-URL_PREFIX = 'boardgames/'
+NAMESPACE = 'games'
+URL_PREFIX = 'games/'
 
 
 patterns = [

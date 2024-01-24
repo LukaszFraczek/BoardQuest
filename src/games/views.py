@@ -20,8 +20,8 @@ from icecream import ic
 
 
 class BrowseBoardgamesView(LoginRequiredMixin, ListView):
-    template_name = 'boardgames/browse_games.html'
-    context_object_name = 'boardgames'
+    template_name = 'games/browse_games.html'
+    context_object_name = 'games'
     model = BoardGame
     paginate_by = 10
 
@@ -45,8 +45,8 @@ class BrowseBoardgamesView(LoginRequiredMixin, ListView):
 
 
 class RequestBoardgamesView(LoginRequiredMixin, ListView):
-    template_name = 'boardgames/request_games.html'
-    context_object_name = 'boardgames'
+    template_name = 'games/request_games.html'
+    context_object_name = 'games'
     paginate_by = 10
 
     def get_queryset(self):
@@ -92,8 +92,8 @@ class RequestBoardgamesView(LoginRequiredMixin, ListView):
 
 
 class RequestedBoardgamesView(LoginRequiredMixin, ListView):
-    template_name = 'boardgames/requested_games.html'
-    context_object_name = 'boardgames'
+    template_name = 'games/requested_games.html'
+    context_object_name = 'games'
     model = BoardGame
     paginate_by = 10
 
@@ -105,8 +105,8 @@ class RequestedBoardgamesView(LoginRequiredMixin, ListView):
 
 
 class AcceptedBoardgamesView(LoginRequiredMixin, ListView):
-    template_name = 'boardgames/accepted_games.html'
-    context_object_name = 'boardgames'
+    template_name = 'games/accepted_games.html'
+    context_object_name = 'games'
     model = BoardGame
     paginate_by = 10
 
@@ -118,7 +118,7 @@ class AcceptedBoardgamesView(LoginRequiredMixin, ListView):
 
 
 class BoardgameDetailViewBGG(TemplateView):
-    template_name = 'boardgames/details_bgg.html'
+    template_name = 'games/details_bgg.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -165,7 +165,7 @@ class BoardgameDetailViewBGG(TemplateView):
 
 
 class BoardgameDetailView(DetailView):
-    template_name = 'boardgames/details.html'
+    template_name = 'games/details.html'
     model = BoardGame
 
     def get_queryset(self):
@@ -210,7 +210,7 @@ class RequestCreateUpdateView(LoginRequiredMixin, View):
         return game_request
 
     def post(self, request):
-        next_url = request.POST.get('next', 'boardgames:request_games')
+        next_url = request.POST.get('next', 'games:request_games')
         form = GameRequestForm(request.POST)
 
         if form.is_valid():
@@ -251,7 +251,7 @@ class RequestCreateUpdateView(LoginRequiredMixin, View):
 
 class RequestCancelView(LoginRequiredMixin, View):
     def post(self, request):
-        next_url = request.POST.get('next', 'boardgames:request_games')
+        next_url = request.POST.get('next', 'games:request_games')
         request_id = request.POST.get('request_id', None)
         requesting_user = self.request.user
 
@@ -273,7 +273,7 @@ class RequestCancelView(LoginRequiredMixin, View):
 class RequestAcceptView(LoginRequiredMixin, View):
     def post(self, request):
         form = RequestAcceptForm(request.POST)
-        redirect_url = 'boardgames:accepted_games'
+        redirect_url = 'games:accepted_games'
 
         if form.is_valid():
             game_id = form.cleaned_data['game_id']
@@ -283,14 +283,14 @@ class RequestAcceptView(LoginRequiredMixin, View):
             if not game_request.accept():
                 ic('Integrity error, request not accepted!')
 
-            redirect_url = reverse('boardgames:update', kwargs={'pk': game_id})
+            redirect_url = reverse('games:update', kwargs={'pk': game_id})
 
         return HttpResponseRedirect(redirect_url)
 
 
 class UpdateBoardGameView(LoginRequiredMixin, UpdateView):
     model = BoardGame
-    template_name = 'boardgames/update.html'
+    template_name = 'games/update.html'
     fields = [
         'primary_name',
         'description',
