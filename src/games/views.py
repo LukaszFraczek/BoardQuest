@@ -72,7 +72,7 @@ class RequestBoardgamesView(LoginRequiredMixin, ListView):
         # get requests assigned to each bgg_id (if any)
         # append request info to corresponding page objects
         game_requests = GameRequest.objects.filter(
-            board_game__bgg_id__in=bgg_ids,
+            game__bgg_id__in=bgg_ids,
             status=GameRequest.Status.PENDING,
         )
 
@@ -139,7 +139,7 @@ class BoardgameDetailViewBGG(TemplateView):
 
             # check if boardgame has a pending request
             board_game_request = GameRequest.objects.filter(
-                board_game=board_game.first(),
+                game=board_game.first(),
                 status=GameRequest.Status.PENDING
             )
 
@@ -205,7 +205,7 @@ class RequestCreateUpdateView(LoginRequiredMixin, View):
     def create_new_game_request(self, game) -> GameRequest:
         game_request = GameRequest.objects.create(
             status=GameRequest.Status.PENDING,
-            board_game=game,
+            game=game,
         )
         return game_request
 
@@ -231,7 +231,7 @@ class RequestCreateUpdateView(LoginRequiredMixin, View):
 
             game_request = GameRequest.objects.filter(
                 status=GameRequest.Status.PENDING,
-                board_game=game,
+                game=game,
             ).first()
 
             if not game_request:
