@@ -99,6 +99,7 @@ class GameRequest(models.Model):
             with transaction.atomic():
                 self.board_game.status = BoardGame.Status.ACCEPTED
                 self.status = self.Status.ACCEPTED
+                self.board_game.save()
                 self.save()
         except IntegrityError:
             return False
@@ -111,6 +112,7 @@ class GameRequest(models.Model):
             with transaction.atomic():
                 self.board_game.status = BoardGame.Status.REJECTED
                 self.status = self.Status.DECLINED
+                self.board_game.save()
                 self.save()
         except IntegrityError:
             return False
