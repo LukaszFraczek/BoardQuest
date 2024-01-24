@@ -18,7 +18,7 @@ def get_item_details_key(bgg_id: int) -> str:
 
 class BGGSearch:
     @staticmethod
-    def __clean_items_response(response):
+    def __clean_items_response(response) -> list:
         # Parse the XML response
         root = ElementTree.fromstring(response.content)
 
@@ -43,7 +43,7 @@ class BGGSearch:
         return games
 
     @staticmethod
-    def __filter_response(response, name_type='all'):
+    def __filter_response(response, name_type='all') -> list:
         # Check if name_type is specified and if it matches the current item
         ic(name_type)
 
@@ -57,7 +57,7 @@ class BGGSearch:
         return filtered_response
 
     @classmethod
-    def fetch_items(cls, name, name_type):
+    def fetch_items(cls, name, name_type) -> list:
         name = name.lower()
 
         # First check if data is already in cache
@@ -80,12 +80,12 @@ class BGGSearch:
             return cls.__filter_response(clean_response, name_type)
         else:
             print(f"BGG fetch items request error: {response.status_code}")
-            return None
+            return []
 
 
 class BGGItemDetails:
     @staticmethod
-    def __clean_details_response(response):
+    def __clean_details_response(response) -> dict:
         # Parse the XML response
         root = ElementTree.fromstring(response.content)
 
@@ -103,7 +103,7 @@ class BGGItemDetails:
         playtime_min = item.find('./minplaytime').get('value')
         playtime_max = item.find('./maxplaytime').get('value')
 
-        details = ({
+        details = {
             'bgg_id': bgg_id,
             'thumbnail_url': thumbnail_url,
             'image_url': image_url,
@@ -114,12 +114,12 @@ class BGGItemDetails:
             'players_max': players_max,
             'playtime_min': playtime_min,
             'playtime_max': playtime_max,
-        })
+        }
 
         return details
 
     @classmethod
-    def fetch_item(cls, bgg_id: int):
+    def fetch_item(cls, bgg_id: int) -> dict:
         # First check if data is already in cache
         cache_key = get_item_details_key(bgg_id)
         cached_data = cache.get(cache_key)
@@ -139,4 +139,4 @@ class BGGItemDetails:
             return clean_response
         else:
             print(f"BGG fetch items details request error: {response.status_code}")
-            return None
+            return {}
