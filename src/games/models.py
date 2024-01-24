@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
-class BoardGame(models.Model):
+class Game(models.Model):
     """Model representing generic boardgame"""
 
     class Status(models.TextChoices):
@@ -34,23 +34,23 @@ class BoardGame(models.Model):
         return f"{self.primary_name} board game"
 
 
-class BoardGameList(models.Model):
+class GameList(models.Model):
     """Model representing a list of owned board games"""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    board_games = models.ManyToManyField(BoardGame, through="BoardGameListEntry", blank=True, related_name="board_games")
+    board_games = models.ManyToManyField(Game, through="BoardGameListEntry", blank=True, related_name="board_games")
 
     def __str__(self):
         return f"{self.user} board game list"
 
-    def add(self, board_game: BoardGame):
-        if board_game.Status != BoardGame.Status.SUPPORTED:
+    def add(self, board_game: Game):
+        if board_game.Status != Game.Status.SUPPORTED:
             return
 
         if board_game not in self.board_games.all():
             self.board_games.add(board_game, through_defaults={})
 
-    def remove(self, board_game: BoardGame):
+    def remove(self, board_game: Game):
         if board_game in self.board_games.all():
             self.board_games.remove(board_game)
 
@@ -58,8 +58,8 @@ class BoardGameList(models.Model):
 class BoardGameListEntry(models.Model):
     """Intermediary M2M Model representing an entry in board game list"""
 
-    board_game = models.ForeignKey(BoardGame, on_delete=models.CASCADE)
-    board_game_list = models.ForeignKey(BoardGameList, on_delete=models.CASCADE)
+    board_game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    board_game_list = models.ForeignKey(GameList, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=timezone.now)
 
 
@@ -77,7 +77,7 @@ class GameRequest(models.Model):
 
     status = models.CharField(max_length=3, choices=Status.choices, default=Status.PENDING, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=timezone.now)
-    board_game = models.ForeignKey(BoardGame, on_delete=models.CASCADE, related_name="request")
+    board_game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="request")
     users = models.ManyToManyField(User, through="GameRequestUser")
 
     class Meta:
@@ -97,7 +97,7 @@ class GameRequest(models.Model):
 
         try:
             with transaction.atomic():
-                self.board_game.status = BoardGame.Status.ACCEPTED
+                self.board_game.status = Game.Status.ACCEPTED
                 self.status = self.Status.ACCEPTED
                 self.board_game.save()
                 self.save()
@@ -110,7 +110,7 @@ class GameRequest(models.Model):
 
         try:
             with transaction.atomic():
-                self.board_game.status = BoardGame.Status.REJECTED
+                self.board_game.status = Game.Status.REJECTED
                 self.status = self.Status.DECLINED
                 self.board_game.save()
                 self.save()

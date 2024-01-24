@@ -12,7 +12,7 @@ from django.views.generic import (
     View,
 )
 
-from .models import BoardGame, GameRequest
+from .models import Game, GameRequest
 from .bgg_api import BGGSearch, BGGItemDetails
 from .forms import GameRequestForm, RequestAcceptForm
 
@@ -22,13 +22,13 @@ from icecream import ic
 class BrowseBoardgamesView(LoginRequiredMixin, ListView):
     template_name = 'games/browse_games.html'
     context_object_name = 'games'
-    model = BoardGame
+    model = Game
     paginate_by = 10
 
     def get_queryset(self):
         name = self.request.GET.get('name')
-        queryset = BoardGame.objects.filter(
-                status=BoardGame.Status.SUPPORTED,
+        queryset = Game.objects.filter(
+                status=Game.Status.SUPPORTED,
             )
 
         if name:
@@ -94,12 +94,12 @@ class RequestBoardgamesView(LoginRequiredMixin, ListView):
 class RequestedBoardgamesView(LoginRequiredMixin, ListView):
     template_name = 'games/requested_games.html'
     context_object_name = 'games'
-    model = BoardGame
+    model = Game
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = BoardGame.objects.filter(
-                status=BoardGame.Status.REQUESTED,
+        queryset = Game.objects.filter(
+                status=Game.Status.REQUESTED,
             )
         return queryset
 
@@ -107,12 +107,12 @@ class RequestedBoardgamesView(LoginRequiredMixin, ListView):
 class AcceptedBoardgamesView(LoginRequiredMixin, ListView):
     template_name = 'games/accepted_games.html'
     context_object_name = 'games'
-    model = BoardGame
+    model = Game
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = BoardGame.objects.filter(
-                status=BoardGame.Status.ACCEPTED,
+        queryset = Game.objects.filter(
+                status=Game.Status.ACCEPTED,
             )
         return queryset
 
@@ -128,9 +128,9 @@ class BoardgameDetailViewBGG(TemplateView):
             return HttpResponseNotFound
 
         # check if boardgame is already in the db
-        board_game = BoardGame.objects.filter(
+        board_game = Game.objects.filter(
             bgg_id=bgg_id,
-            status=BoardGame.Status.REQUESTED
+            status=Game.Status.REQUESTED
         )
 
         if board_game.exists():
@@ -166,12 +166,12 @@ class BoardgameDetailViewBGG(TemplateView):
 
 class BoardgameDetailView(DetailView):
     template_name = 'games/details.html'
-    model = BoardGame
+    model = Game
 
     def get_queryset(self):
         # display only supported games!
         queryset = super().get_queryset()
-        queryset = queryset.filter(status=BoardGame.Status.SUPPORTED)
+        queryset = queryset.filter(status=Game.Status.SUPPORTED)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -182,13 +182,13 @@ class BoardgameDetailView(DetailView):
 
 class RequestCreateUpdateView(LoginRequiredMixin, View):
     ALLOWED_STATUSES = (
-        BoardGame.Status.REQUESTED,
-        BoardGame.Status.REJECTED,
+        Game.Status.REQUESTED,
+        Game.Status.REJECTED,
     )
 
-    def create_new_game(self, form) -> BoardGame:
-        game = BoardGame.objects.create(
-            status=BoardGame.Status.REQUESTED,
+    def create_new_game(self, form) -> Game:
+        game = Game.objects.create(
+            status=Game.Status.REQUESTED,
             bgg_id=form.cleaned_data['bgg_id'],
             primary_name=form.cleaned_data['primary_name'],
             description=form.cleaned_data['description'],
@@ -216,7 +216,7 @@ class RequestCreateUpdateView(LoginRequiredMixin, View):
         if form.is_valid():
             requesting_user = self.request.user
 
-            game = BoardGame.objects.filter(
+            game = Game.objects.filter(
                 bgg_id=form.cleaned_data['bgg_id']
             ).first()
 
@@ -289,7 +289,7 @@ class RequestAcceptView(LoginRequiredMixin, View):
 
 
 class UpdateBoardGameView(LoginRequiredMixin, UpdateView):
-    model = BoardGame
+    model = Game
     template_name = 'games/update.html'
     fields = [
         'primary_name',
@@ -307,5 +307,5 @@ class UpdateBoardGameView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         # only accepted games allowed!
         queryset = super().get_queryset()
-        queryset = queryset.filter(status=BoardGame.Status.ACCEPTED)
+        queryset = queryset.filter(status=Game.Status.ACCEPTED)
         return queryset
