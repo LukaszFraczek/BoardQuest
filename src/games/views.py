@@ -120,6 +120,44 @@ class AcceptedBoardgamesView(LoginRequiredMixin, ListView):
 class BoardgameDetailViewBGG(TemplateView):
     template_name = 'games/details_bgg.html'
 
+    def get_game_request_data(self, game_obj) -> dict:
+        """Returns context data for game request"""
+
+        data = dict()
+
+        game_request = GameRequest.objects.filter(
+            game=game_obj,
+            status=GameRequest.Status.PENDING,
+        )
+
+        if game_request.exists():
+            users = game_request.first().users.all()
+            data['user_sent_request'] = True if self.request.user in users else False
+            data['request_exist'] = True
+            data['users_amount'] = users.count()
+            data['request_id'] = game_request.first().id
+        else:
+            data['request_exist'] = False
+
+        return data
+
+    def get_game_values(self, bgg_id) -> (dict, dict):
+        context = dict()
+        game = Game.objects.filter(bgg_id=bgg_id)
+
+        if game.exists():
+            ic("Game fetched from DB")
+            game_obj = game.first()
+            game_details = game.values().first()
+
+            game_request_data = self.get_game_request_data(game_obj)
+            context.update(game_request_data)
+        else:
+            ic("Game fetched BGG API")
+            game_details = BGGItemDetails.fetch_item(bgg_id)
+
+        return context, game_details
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         bgg_id = self.kwargs.get('bgg_id')
@@ -127,39 +165,11 @@ class BoardgameDetailViewBGG(TemplateView):
         if not bgg_id:
             return HttpResponseNotFound
 
-        # check if boardgame is already in the db
-        board_game = Game.objects.filter(
-            bgg_id=bgg_id,
-            status=Game.Status.REQUESTED
-        )
+        game_context, game_details = self.get_game_values(bgg_id)
 
-        if board_game.exists():
-            details = board_game.values().first()
-            ic("Game fetched from DB")
-
-            # check if boardgame has a pending request
-            board_game_request = GameRequest.objects.filter(
-                game=board_game.first(),
-                status=GameRequest.Status.PENDING
-            )
-
-            if board_game_request.exists():
-                # check how many users request the game and append request id
-                users = board_game_request.first().users.all()
-                context['request_exist'] = True
-                context['users_amount'] = users.count()
-                context['request_id'] = board_game_request.first().id
-
-                if self.request.user in users:
-                    # check if current user is requesting the game
-                    context['user_sent_request'] = True
-
-        else:
-            details = BGGItemDetails.fetch_item(bgg_id)
-            ic("Game fetched BGG API")
-
-        context['form'] = GameRequestForm(initial=details)
-        context['details'] = details
+        context.update(game_context)
+        context['form'] = GameRequestForm(initial=game_details)
+        context['details'] = game_details
         context['bgg_detail_url'] = settings.BGG_GAME_DETAIL_URL
         return context
 
