@@ -56,7 +56,6 @@ class RequestBoardgamesView(LoginRequiredMixin, ListView):
 
         if name:
             queryset = BGGSearch.fetch_items(name, name_type)
-            # TODO: remove all games that are already supported!
 
         return queryset
 
@@ -65,29 +64,25 @@ class RequestBoardgamesView(LoginRequiredMixin, ListView):
         context['name'] = self.request.GET.get('name', '')
         context['name_type'] = self.request.GET.get('name_type', 'all')
 
-        # get page objects and their bgg_id
-        page_objects = context['object_list']
-        bgg_ids = [game['bgg_id'] for game in page_objects]
+        page_games = context['object_list']
+        page_games_bgg_ids = [game['bgg_id'] for game in page_games]
 
-        # get requests assigned to each bgg_id (if any)
-        # append request info to corresponding page objects
-        game_requests = GameRequest.objects.filter(
-            game__bgg_id__in=bgg_ids,
-            status=GameRequest.Status.PENDING,
-        )
+        db_games = Game.objects.filter(bgg_id__in=page_games_bgg_ids)
 
-        game_requests_bgg_ids = [game_request.board_game.bgg_id for game_request in game_requests]
+        if db_games.exists():
+            db_games_statuses = {game.bgg_id: game.status for game in db_games}
+            db_games_bgg_ids = db_games_statuses.keys()
 
-        ic(game_requests)
-        ic(game_requests_bgg_ids)
+            for page_game in page_games:
+                page_game_bgg_id = int(page_game['bgg_id'])
+                if page_game_bgg_id in db_games_bgg_ids:
+                    status = {'status': db_games_statuses[page_game_bgg_id]}
+                else:
+                    status = {'status': None}
+                # this works because page_games is actually a reference to a list in the context
+                page_game.update(status)
 
-        for game in page_objects:
-            if game['bgg_id'] in str(game_requests_bgg_ids):
-                game['game_request'] = True
-                continue
-            game['game_request'] = False
-        ic(page_objects)
-
+        ic(page_games)
         return context
 
 

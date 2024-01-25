@@ -12,6 +12,7 @@ class Game(models.Model):
         ACCEPTED = "Acc", _("Accepted")
         SUPPORTED = "Sup", _("Supported")
         REJECTED = "Rej", _("Rejected")
+        DORMANT = "Dor", _("Dormant")
 
     status = models.CharField(max_length=3, choices=Status.choices, default=Status.REQUESTED, null=False, blank=False)
     bgg_id = models.IntegerField(null=False, blank=False)
@@ -38,7 +39,7 @@ class GameList(models.Model):
     """Model representing a list of owned board games"""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    games = models.ManyToManyField(Game, through="BoardGameListEntry", blank=True, related_name="board_games")
+    games = models.ManyToManyField(Game, through="GameListEntry", blank=True, related_name="board_games")
 
     def __str__(self):
         return f"{self.user} board game list"
@@ -55,11 +56,11 @@ class GameList(models.Model):
             self.games.remove(board_game)
 
 
-class BoardGameListEntry(models.Model):
+class GameListEntry(models.Model):
     """Intermediary M2M Model representing an entry in board game list"""
 
-    board_game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    board_game_list = models.ForeignKey(GameList, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    game_list = models.ForeignKey(GameList, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=timezone.now)
 
 
@@ -83,7 +84,7 @@ class GameRequest(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['board_game'],
+                fields=['game'],
                 name='unique_pending_request',
                 condition=models.Q(status=RequestStatus.PENDING)
             )
@@ -122,8 +123,11 @@ class GameRequest(models.Model):
         """Cancel request to add a game to game library"""
 
         try:
-            self.status = self.Status.CANCELLED
-            self.save()
+            with transaction.atomic():
+                self.game.status = Game.Status.DORMANT
+                self.status = self.Status.CANCELLED
+                self.game.save()
+                self.save()
         except IntegrityError:
             return False
         return True
