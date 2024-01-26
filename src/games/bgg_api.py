@@ -110,7 +110,7 @@ class BGGItemDetails:
             'thumbnail_url': thumbnail_url,
             'image_url': image_url,
             'primary_name': primary_name,
-            'release_year': release_year if release_year != 0 else None,
+            'release_year': release_year if release_year != '0' else None,
             'description': description.replace("&#10;", "<br>"),
             'players_min': players_min,
             'players_max': players_max,
