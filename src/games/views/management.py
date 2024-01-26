@@ -31,8 +31,14 @@ class AcceptedGamesView(LoginRequiredMixin, ListView):
 
 
 class UpdateGameView(LoginRequiredMixin, UpdateView):
+    ALLOWED_STATUSES = (
+        Game.Status.ACCEPTED,
+        Game.Status.SUPPORTED,
+    )
+
     model = Game
     template_name = 'games/update.html'
+    success_url = 'homepage'
     fields = [
         'primary_name',
         'description',
@@ -49,5 +55,9 @@ class UpdateGameView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         # only accepted games allowed!
         queryset = super().get_queryset()
-        queryset = queryset.filter(status=Game.Status.ACCEPTED)
+        queryset = queryset.filter(status__in=self.ALLOWED_STATUSES)
         return queryset
+
+    def form_valid(self, form):
+        form.instance.status = Game.Status.SUPPORTED
+        return super().form_valid(form)
