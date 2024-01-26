@@ -94,9 +94,9 @@ class BGGItemDetails:
 
         bgg_id = item.get('id')
         thumbnail_url_item = item.find('./thumbnail')
-        thumbnail_url = thumbnail_url_item.text.strip() if thumbnail_url_item else None
+        thumbnail_url = thumbnail_url_item.text.strip() if thumbnail_url_item is not None else None
         image_url_item = item.find('./image')
-        image_url = image_url_item.text.strip() if image_url_item else None
+        image_url = image_url_item.text.strip() if image_url_item is not None else None
         primary_name = item.find('./name[@type="primary"]').get('value')
         release_year = item.find('./yearpublished').get('value')
         description = item.find('./description').text.strip()
