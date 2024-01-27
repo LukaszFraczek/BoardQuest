@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Board game search
+    Game details
 {% endblock title %}
 
 {% block page_heading %}
@@ -26,10 +26,16 @@
                         <!-- Name & details -->
                         <div class="col-lg-9 col-md-9 col-sm-8">
                             <h3 class="m-0 font-weight-bold text-primary">{{ object.primary_name }}</h3>
-                            <h6 class="m-0 font-weight-bold text-secondary">{{ object.release_year }}</h6>
+                            {% if object.release_year %}
+                                <h6 class="m-0 font-weight-bold text-secondary">{{ object.release_year }}</h6>
+                            {% else %}
+                                <h6 class="m-0 font-weight-bold text-secondary">Unspecified</h6>
+                            {% endif %}
                             <hr class="my-2">
-                            <p class="mb-1">{{ object.description_short }}</p>
-                            <hr class="my-2">
+                            {% if object.description_short %}
+                                <p class="mb-1">{{ object.description_short|safe }}</p>
+                                <hr class="my-2">
+                            {% endif %}
                             <div class="row">
                                 <div class="col-sm-6">
                                     <h6 class="m-0 font-weight-bold text-secondary">{{ object.players_min }}-{{ object.players_max }} Players</h6>
@@ -38,6 +44,31 @@
                                     <h6 class="m-0 font-weight-bold text-secondary">{{ object.playtime_min }}-{{ object.playtime_max }} Min</h6>
                                 </div>
                             </div>
+                            {% if object.status == "Req" %}
+                                <div class="my-4"></div>
+                                <div class="card bg-warning">
+                                    <div class="card-body text-gray-900">
+                                        {% if user_sent_request and users_amount == 1 %}
+                                            You requested this game to be added!
+                                        {% elif user_sent_request and users_amount == 2 %}
+                                            This game was requested by you and 1 other user!
+                                        {% elif user_sent_request and users_amount > 2 %}
+                                            This game was requested by you and {{ users_amount|add:-1 }} other users!
+                                        {% elif users_amount == 1 %}
+                                            This game was requested by 1 user!
+                                        {% else %}
+                                            This game was requested by {{ users_amount }} users!
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% elif object.status == "Acc" %}
+                                <div class="my-4"></div>
+                                <div class="card bg-warning">
+                                    <div class="card-body text-gray-900">
+                                        Request to add this game was accepted. Coming soon!
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -47,15 +78,93 @@
             <!-- Supplementary links -->
             <div class="card h-100">
                 <div class="card-body text-center">
+                    <!-- Options for no status -->
+                    {% if not object.status %}
+                     <form method="post" action="{% url 'games:request_create_new' %}">
+                        {% csrf_token %}
+                        {{ form }}
+                        <button type="submit" class="btn btn-success btn-sm w-100">
+                            <span class="text text-truncate">Request game to be added</span>
+                        </button>
+                    </form>
+                    <div class="my-2"></div>
+
+                    <!-- Options for dormant games -->
+                    {% elif object.status == 'Dor' or not object.status %}
+                    <form method="post" action="{% url 'games:request_create_existing' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="game_id" value="{{ object.id }}">
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="btn btn-success btn-sm w-100">
+                            <span class="text text-truncate">Request game to be added</span>
+                        </button>
+                    </form>
+                    <div class="my-2"></div>
+
+                    <!-- Options for requested games -->
+                    {% elif object.status == 'Req' %}
+                        {% if user_sent_request %}
+                        <form method="post" action="{% url 'games:request_cancel' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <input type="hidden" name="request_id" value="{{ request_id }}">
+                            <button type="submit" class="btn btn-warning btn-sm w-100">
+                                <span class="text text-truncate">Cancel request</span>
+                            </button>
+                        </form>
+                        <div class="my-2"></div>
+
+                        {% else %}
+                        <form method="post" action="{% url 'games:request_update' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <input type="hidden" name="request_id" value="{{ request_id }}">
+                            <button type="submit" class="btn btn-success btn-sm w-100">
+                                <span class="text text-truncate">Request game to be added</span>
+                            </button>
+                        </form>
+                        <div class="my-2"></div>
+                        {% endif %}
+
+                    <form method="post" action="{% url 'games:request_accept' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="game_id" value="{{ object.id }}">
+                        <input type="hidden" name="request_id" value="{{ request_id }}">
+                        <button type="submit" class="btn btn-success btn-sm w-100">
+                            <span class="text text-truncate">Accept request</span>
+                        </button>
+                    </form>
+                    <div class="my-2"></div>
+
+                    <!-- Options for accepted games -->
+                    {% elif object.status == 'Acc' %}
+                    <a class="btn btn-success btn-sm w-100" href="#">
+                        <span class="text text-truncate">Check details and add</span>
+                    </a>
+                    <div class="my-2"></div>
+
+                    <!-- Options for supported games -->
+                    {% elif object.status == 'Sup' %}
                     <a class="btn btn-success btn-sm w-100" href="#">
                         <span class="text text-truncate">Add to my games</span>
+                    </a>
+                    <div class="my-2"></div>
+                    <a class="btn btn-danger btn-sm w-100" href="#">
+                        <span class="text text-truncate">Remove from my games</span>
                     </a>
                     <div class="my-2"></div>
                     <a class="btn btn-primary btn-sm w-100" href="#">
                         <span class="text text-truncate">All achievements</span>
                     </a>
                     <div class="my-2"></div>
-                    <a class="btn btn-primary btn-sm w-100" href="{{ bgg_detail_url }}{{ object.bgg_id }}">
+                    <a class="btn btn-warning btn-sm w-100" href="#">
+                        <span class="text text-truncate">Update game details</span>
+                    </a>
+                    <div class="my-2"></div>
+                    {% endif %}
+
+                    <!-- Options always available -->
+                    <a class="btn btn-primary btn-sm w-100" href="{{ bgg_detail_url }}{{ details.bgg_id }}">
                         <span class="text text-truncate">Check on BGG</span>
                     </a>
                 </div>
@@ -65,7 +174,6 @@
     <!-- End of row -->
     <div class="row">
         <div class="col-12">
-            <!-- Supplementary links -->
             <div class="card">
                 <div class="card-body">
                     <div class="row">
