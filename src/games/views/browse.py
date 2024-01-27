@@ -4,7 +4,7 @@ from django.views.generic import ListView
 from ..models import Game
 from ..bgg_api import BGGSearch
 
-from typing import Dict, Any
+from typing import Dict, List, Any
 from icecream import ic
 
 
@@ -38,35 +38,41 @@ class RequestGamesView(LoginRequiredMixin, ListView):
     context_object_name = 'games'
     paginate_by = 10
 
-    def add_games_status(self, context: Dict[str, Any]) -> None:
-        """Get game status and add it to each game in the context"""
+    def get_games_details(self, games: List[Dict]) -> Dict:
+        """Get game status and id of each game in the list"""
 
-        page_games = context['object_list']
+        games_bgg_ids = [game['bgg_id'] for game in games]
 
-        if not page_games:
-            return
+        games_in_db = Game.objects.filter(bgg_id__in=games_bgg_ids)
 
-        page_games_bgg_ids = [game['bgg_id'] for game in page_games]
+        if games_in_db.exists():
+            games_details = dict()
+            for game in games_in_db:
+                details = {
+                    'id': game.id,
+                    'status': game.status,
+                }
+                games_details.update({game.bgg_id: details})
 
-        db_games = Game.objects.filter(bgg_id__in=page_games_bgg_ids)
+            return games_details
+        return {}
 
-        if db_games.exists():
-            db_games_statuses = {game.bgg_id: game.status for game in db_games}
-            db_games_bgg_ids = db_games_statuses.keys()
+    def update_games_details(self, games: List[Dict]) -> None:
+        """In-place update of game dicts contained in provided list"""
 
-            for page_game in page_games:
-                page_game_bgg_id = int(page_game['bgg_id'])
-                if page_game_bgg_id in db_games_bgg_ids:
-                    status = {'status': db_games_statuses[page_game_bgg_id]}
-                else:
-                    status = {'status': None}
-                # this works because page_games is reference to a list in the context
-                page_game.update(status)
-        else:
-            for page_game in page_games:
-                page_game.update({'status': None})
+        details = self.get_games_details(games)
+        no_details = {
+            'id': None,
+            'status': None,
+        }
 
-        ic(page_games)
+        for game in games:
+            bgg_id = int(game['bgg_id'])
+            if bgg_id in details.keys():
+                game_details = details[bgg_id]
+                game.update(game_details)
+            else:
+                game.update(no_details)
 
     def get_queryset(self):
         name = self.request.GET.get('name')
@@ -83,6 +89,10 @@ class RequestGamesView(LoginRequiredMixin, ListView):
         context['name'] = self.request.GET.get('name', '')
         context['name_type'] = self.request.GET.get('name_type', 'all')
 
-        self.add_games_status(context)
+        page_games = context['object_list']
+        if page_games:
+            self.update_games_details(page_games)
+
+        ic(context)
 
         return context
