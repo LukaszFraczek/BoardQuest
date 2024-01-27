@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -11,11 +12,57 @@ from ..forms import GameRequestForm, RequestAcceptForm
 from icecream import ic
 
 
-class RequestCreateUpdateView(LoginRequiredMixin, View):
+class CreateRequestView(LoginRequiredMixin, View):
+    def create_new_game_request(self, game) -> GameRequest:
+        game_request = GameRequest.objects.create(
+            status=GameRequest.Status.PENDING,
+            game=game,
+        )
+        return game_request
+
+
+class CreateRequestExistingGameView(CreateRequestView):
     ALLOWED_STATUSES = (
-        Game.Status.REQUESTED,
         Game.Status.REJECTED,
+        Game.Status.DORMANT,
     )
+
+    def post(self, request):
+        requesting_user = self.request.user
+        next_url_default = 'games:request_games'
+
+        next_url = request.POST.get('next', next_url_default)
+        game_id = request.POST.get('game_id')
+
+        game = get_object_or_404(Game, id=game_id)
+
+        if game.status not in self.ALLOWED_STATUSES:
+            # this is done to prevent creating new requests when game is supported or in review
+            ic('Game exists and its status except it from creating new request')
+            return HttpResponseRedirect(next_url_default)
+
+        game_request = GameRequest.objects.filter(
+            status=GameRequest.Status.PENDING,
+            game=game,
+        )
+
+        if game_request.exists():
+            ic('Pending game request already exists!')
+            return HttpResponseRedirect(next_url_default)
+
+        ic('Creating request...')
+        try:
+            with transaction.atomic():
+                game_request = self.create_new_game_request(game)
+                game_request.users.add(requesting_user, through_defaults={})
+                game.status = Game.Status.REQUESTED
+                game.save()
+        except IntegrityError:
+            ic('Failed while creating request')
+        return HttpResponseRedirect(next_url)
+
+
+class CreateRequestNewGameView(CreateRequestView):
 
     def create_new_game(self, form) -> Game:
         game = Game.objects.create(
@@ -33,54 +80,64 @@ class RequestCreateUpdateView(LoginRequiredMixin, View):
         )
         return game
 
-    def create_new_game_request(self, game) -> GameRequest:
-        game_request = GameRequest.objects.create(
-            status=GameRequest.Status.PENDING,
-            game=game,
-        )
-        return game_request
-
     def post(self, request):
-        next_url = request.POST.get('next', 'games:request_games')
+        requesting_user = self.request.user
+        next_url_default = 'games:request_games'
+
+        next_url = request.POST.get('next', next_url_default)
         form = GameRequestForm(request.POST)
 
         if form.is_valid():
-            requesting_user = self.request.user
 
-            game = Game.objects.filter(
-                bgg_id=form.cleaned_data['bgg_id']
-            ).first()
+            game = Game.objects.filter(bgg_id=form.cleaned_data['bgg_id'])
 
-            if not game:
-                ic('Creating new game object...')
-                game = self.create_new_game(form)
+            if game.exists():
+                ic('Game already exists! Wrong endpoint')
+                return HttpResponseRedirect(next_url_default)
 
-            elif game.status not in self.ALLOWED_STATUSES:
-                # this is done to prevent creating new requests when game is supported or in review
-                ic('Game exists and its status except it from proceeding')
-                return HttpResponseRedirect(next_url)
+            ic('Creating new game object...')
+            game = self.create_new_game(form)
+            next_url = reverse('games:details', kwargs={'pk': game.id})
 
-            game_request = GameRequest.objects.filter(
-                status=GameRequest.Status.PENDING,
-                game=game,
-            ).first()
+            ic('Creating request...')
 
-            if not game_request:
-                # for cases where previous requests were rejected (game in db but no request)
-                ic('Creating request...')
-                game_request = self.create_new_game_request(game)
-
-            ic(requesting_user, game_request.users.all())
-            if requesting_user not in game_request.users.all():
-                ic('Adding user to request...')
-                game_request.users.add(requesting_user, through_defaults={})
+            try:
+                with transaction.atomic():
+                    game_request = self.create_new_game_request(game)
+                    game_request.users.add(requesting_user, through_defaults={})
+            except IntegrityError:
+                ic('Failed while creating request')
         else:
             ic(form.errors)
 
         return HttpResponseRedirect(next_url)
 
 
-class RequestCancelView(LoginRequiredMixin, View):
+class UpdateRequestView(LoginRequiredMixin, View):
+    def post(self, request):
+        requesting_user = self.request.user
+        next_url_default = 'games:request_games'
+
+        next_url = request.POST.get('next', next_url_default)
+        request_id = request.POST.get('request_id')
+
+        game_request = get_object_or_404(
+            GameRequest,
+            id=request_id,
+            status=GameRequest.Status.PENDING,
+        )
+
+        ic(requesting_user, game_request.users.all())
+        if requesting_user not in game_request.users.all():
+            ic('Adding user to request...')
+            game_request.users.add(requesting_user, through_defaults={})
+        else:
+            ic('User is already requesting the game!')
+
+        return HttpResponseRedirect(next_url)
+
+
+class CancelRequestView(LoginRequiredMixin, View):
     def post(self, request):
         next_url = request.POST.get('next', 'games:request_games')
         request_id = request.POST.get('request_id', None)
@@ -101,7 +158,7 @@ class RequestCancelView(LoginRequiredMixin, View):
         return HttpResponseRedirect(next_url)
 
 
-class RequestAcceptView(LoginRequiredMixin, View):
+class AcceptRequestView(LoginRequiredMixin, View):
     def post(self, request):
         form = RequestAcceptForm(request.POST)
         redirect_url = 'games:accepted_games'

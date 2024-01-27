@@ -12,7 +12,9 @@ from .management import (
     UpdateGameView,
 )
 from .requests import (
-    RequestCreateUpdateView,
-    RequestCancelView,
-    RequestAcceptView,
+    CreateRequestExistingGameView,
+    CreateRequestNewGameView,
+    UpdateRequestView,
+    CancelRequestView,
+    AcceptRequestView,
 )

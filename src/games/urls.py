@@ -7,9 +7,11 @@ from .views import (
     AcceptedGamesView,
     GameDetailView,
     GameDetailViewBGG,
-    RequestCreateUpdateView,
-    RequestCancelView,
-    RequestAcceptView,
+    CreateRequestExistingGameView,
+    CreateRequestNewGameView,
+    UpdateRequestView,
+    CancelRequestView,
+    AcceptRequestView,
     UpdateGameView,
 )
 
@@ -19,16 +21,18 @@ URL_PREFIX = 'games/'
 
 
 patterns = [
-    path('browse-games/', BrowseGamesView.as_view(), name='browse_games'),
-    path('request-games/', RequestGamesView.as_view(), name='request_games'),
-    path('requested-games/', RequestedGamesView.as_view(), name='requested_games'),
-    path('accepted-games/', AcceptedGamesView.as_view(), name='accepted_games'),
+    path('browse/', BrowseGamesView.as_view(), name='browse_games'),
+    path('request/', RequestGamesView.as_view(), name='request_games'),
     path('<int:pk>/', GameDetailView.as_view(), name='details'),
     path('bgg-item/<int:bgg_id>/', GameDetailViewBGG.as_view(), name='details_bgg'),
-    path('request/create/', RequestCreateUpdateView.as_view(), name='request_create'),
-    path('request/cancel/', RequestCancelView.as_view(), name='request_cancel'),
-    path('request/accept/', RequestAcceptView.as_view(), name='request_accept'),
-    path('update/<int:pk>/', UpdateGameView.as_view(), name='update'),
+    path('request/create/new-game', CreateRequestNewGameView.as_view(), name='request_create_new'),
+    path('request/create/existing-game', CreateRequestExistingGameView.as_view(), name='request_create_existing'),
+    path('request/cancel/', CancelRequestView.as_view(), name='request_cancel'),
+    path('request/update/', UpdateRequestView.as_view(), name='request_update'),
+    path('request/accept/', AcceptRequestView.as_view(), name='request_accept'),
+    path('manage/requested/', RequestedGamesView.as_view(), name='requested_games'),
+    path('manage/accepted/', AcceptedGamesView.as_view(), name='accepted_games'),
+    path('manage/update/<int:pk>/', UpdateGameView.as_view(), name='update'),
 ]
 
 namespace_patterns = (patterns, NAMESPACE)
