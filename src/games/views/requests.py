@@ -170,7 +170,7 @@ class AcceptRequestView(LoginRequiredMixin, View):
             game_request = get_object_or_404(GameRequest, id=request_id)
             if not game_request.accept():
                 ic('Integrity error, request not accepted!')
-
-            redirect_url = reverse('games:update', kwargs={'pk': game_id})
+            else:
+                redirect_url = reverse('games:update', kwargs={'pk': game_id})
 
         return HttpResponseRedirect(redirect_url)
