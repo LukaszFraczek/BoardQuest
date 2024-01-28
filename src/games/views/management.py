@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView
 
+from ..forms import GameUpdateForm
 from ..models import Game
 
 
@@ -38,22 +40,10 @@ class UpdateGameView(LoginRequiredMixin, UpdateView):
 
     model = Game
     template_name = 'games/update.html'
-    success_url = 'homepage'
-    fields = [
-        'primary_name',
-        'description',
-        'description_short',
-        'release_year',
-        'players_min',
-        'players_max',
-        'playtime_min',
-        'playtime_max',
-        'image_url',
-        'thumbnail_url',
-    ]
+    form_class = GameUpdateForm
+    success_url = reverse_lazy('games:accepted_games')
 
     def get_queryset(self):
-        # only accepted games allowed!
         queryset = super().get_queryset()
         queryset = queryset.filter(status__in=self.ALLOWED_STATUSES)
         return queryset
