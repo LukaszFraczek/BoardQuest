@@ -32,10 +32,6 @@
                                 <h6 class="m-0 font-weight-bold text-secondary">Unspecified</h6>
                             {% endif %}
                             <hr class="my-2">
-                            {% if object.description_short %}
-                                <p class="mb-1">{{ object.description_short|safe }}</p>
-                                <hr class="my-2">
-                            {% endif %}
                             <div class="row">
                                 <div class="col-sm-6">
                                     <h6 class="m-0 font-weight-bold text-secondary">{{ object.players_min }}-{{ object.players_max }} Players</h6>
@@ -44,6 +40,10 @@
                                     <h6 class="m-0 font-weight-bold text-secondary">{{ object.playtime_min }}-{{ object.playtime_max }} Min</h6>
                                 </div>
                             </div>
+                            {% if object.description_short %}
+                                <hr class="my-2">
+                                <p class="mb-1">{{ object.description_short|safe }}</p>
+                            {% endif %}
                             {% if object.status == "Req" %}
                                 <div class="my-4"></div>
                                 <div class="card bg-warning">
@@ -63,7 +63,7 @@
                                 </div>
                             {% elif object.status == "Acc" %}
                                 <div class="my-4"></div>
-                                <div class="card bg-warning">
+                                <div class="card bg-success">
                                     <div class="card-body text-gray-900">
                                         Request to add this game was accepted. Coming soon!
                                     </div>
