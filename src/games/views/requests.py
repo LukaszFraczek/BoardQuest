@@ -70,7 +70,7 @@ class CreateRequestNewGameView(CreateRequestView):
             bgg_id=form.cleaned_data['bgg_id'],
             primary_name=form.cleaned_data['primary_name'],
             description=form.cleaned_data['description'],
-            release_year=parse_date(form.cleaned_data['release_year']),
+            release_year=form.cleaned_data['release_year'],
             players_min=form.cleaned_data['players_min'],
             players_max=form.cleaned_data['players_max'],
             playtime_min=form.cleaned_data['playtime_min'],
