@@ -24,7 +24,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
 
 class UserUsernameUpdateForm(UserChangeForm):
-    template_name = "users/forms/generic.html"
+    template_name = "users_settings/forms/generic.html"
 
     username_confirm = forms.CharField(
         widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
@@ -81,7 +81,7 @@ class UserUsernameUpdateForm(UserChangeForm):
 
 
 class UserEmailUpdateForm(UserChangeForm):
-    template_name = "users/forms/generic.html"
+    template_name = "users_settings/forms/generic.html"
 
     email_confirm = forms.EmailField(
         widget=forms.EmailInput(attrs={"class": "form-control", "type": "email"}),
@@ -138,7 +138,7 @@ class UserEmailUpdateForm(UserChangeForm):
 
 
 class UserPasswordUpdateForm(PasswordChangeForm):
-    template_name = "users/forms/generic.html"
+    template_name = "users_settings/forms/generic.html"
 
     field_order = ["new_password1", "new_password2", "old_password"]
 
