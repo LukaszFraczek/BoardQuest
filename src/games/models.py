@@ -43,16 +43,16 @@ class GameList(models.Model):
     def __str__(self):
         return f"{self.user} board game list"
 
-    def add(self, board_game: Game):
-        if board_game.status != Game.Status.SUPPORTED:
+    def add(self, game: Game):
+        if game.status != Game.Status.SUPPORTED:
             return
 
-        if board_game not in self.games.all():
-            self.games.add(board_game, through_defaults={})
+        if game not in self.games.all():
+            self.games.add(game, through_defaults={})
 
-    def remove(self, board_game: Game):
-        if board_game in self.games.all():
-            self.games.remove(board_game)
+    def remove(self, game: Game):
+        if game in self.games.all():
+            self.games.remove(game)
 
 
 class GameListEntry(models.Model):
