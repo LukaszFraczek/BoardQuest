@@ -44,7 +44,7 @@ class GameList(models.Model):
         return f"{self.user} board game list"
 
     def add(self, board_game: Game):
-        if board_game.Status != Game.Status.SUPPORTED:
+        if board_game.status != Game.Status.SUPPORTED:
             return
 
         if board_game not in self.games.all():
