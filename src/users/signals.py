@@ -7,7 +7,7 @@ from icecream import ic
 
 from users.models import Profile
 from friends.models import FriendList
-from games.models import GameList
+from games.models import GameCollection
 
 
 @receiver(post_save, sender=User)
@@ -17,6 +17,6 @@ def create_new_user_records(sender, instance, created, **kwargs):
             with transaction.atomic():
                 Profile.objects.create(user=instance)
                 FriendList.objects.create(user=instance)
-                GameList.objects.create(user=instance)
+                GameCollection.objects.create(user=instance)
         except IntegrityError:
             ic("Error while creating new user")
