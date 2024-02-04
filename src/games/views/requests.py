@@ -3,7 +3,6 @@ from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils.dateparse import parse_date
 from django.views.generic import View
 
 from ..models import Game, GameRequest
