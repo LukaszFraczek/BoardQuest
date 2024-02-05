@@ -52,9 +52,19 @@ class GameDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if self.object.status == Game.Status.REQUESTED:
+        user = self.request.user
+        game = self.object
+
+        if game.status == Game.Status.REQUESTED:
             game_request_data = self.get_game_request_data(self.object)
             context.update(game_request_data)
 
+        elif game.status == Game.Status.SUPPORTED:
+            if game in user.collection.games.all():
+                context['game_in_collection'] = True
+            else:
+                context['game_in_collection'] = False
+
         context['bgg_detail_url'] = settings.BGG_GAME_DETAIL_URL
+        ic(context)
         return context

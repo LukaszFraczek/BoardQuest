@@ -18,3 +18,8 @@ from .requests import (
     CancelRequestView,
     AcceptRequestView,
 )
+from .collection import (
+    GameCollectionView,
+    GameCollectionAddView,
+    GameCollectionRemoveView,
+)

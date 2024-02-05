@@ -13,6 +13,9 @@ from .views import (
     CancelRequestView,
     AcceptRequestView,
     UpdateGameView,
+    GameCollectionView,
+    GameCollectionAddView,
+    GameCollectionRemoveView,
 )
 
 
@@ -33,6 +36,9 @@ patterns = [
     path('manage/requested/', RequestedGamesView.as_view(), name='requested_games'),
     path('manage/accepted/', AcceptedGamesView.as_view(), name='accepted_games'),
     path('manage/update/<int:pk>/', UpdateGameView.as_view(), name='update'),
+    path('collection/<int:user_id>/', GameCollectionView.as_view(), name='collection'),
+    path('collection/add/', GameCollectionAddView.as_view(), name='collection_add'),
+    path('collection/remove/', GameCollectionRemoveView.as_view(), name='collection_remove'),
 ]
 
 namespace_patterns = (patterns, NAMESPACE)
