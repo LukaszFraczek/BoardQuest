@@ -9,7 +9,7 @@ from ..models import Game, GameCollection
 
 
 class GameCollectionView(LoginRequiredMixin, ListView):
-    template_name = 'games/list/browse_collection.html'
+    template_name = 'games/browse/collection.html'
     context_object_name = 'games'
     model = Game
     paginate_by = 10

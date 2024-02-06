@@ -9,7 +9,7 @@ from icecream import ic
 
 
 class BrowseGamesView(LoginRequiredMixin, ListView):
-    template_name = 'games/list/browse_games.html'
+    template_name = 'games/browse/supported.html'
     context_object_name = 'games'
     model = Game
     paginate_by = 10
@@ -34,7 +34,7 @@ class BrowseGamesView(LoginRequiredMixin, ListView):
 
 
 class RequestGamesView(LoginRequiredMixin, ListView):
-    template_name = 'games/list/request_games.html'
+    template_name = 'games/browse/unsupported.html'
     context_object_name = 'games'
     paginate_by = 10
 
