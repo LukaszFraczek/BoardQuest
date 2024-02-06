@@ -4,12 +4,12 @@ from django.views.generic import ListView
 from ..models import Game
 from ..bgg_api import BGGSearch
 
-from typing import Dict, List, Any
+from typing import Dict, List
 from icecream import ic
 
 
 class BrowseGamesView(LoginRequiredMixin, ListView):
-    template_name = 'games/browse_games.html'
+    template_name = 'games/list/browse_games.html'
     context_object_name = 'games'
     model = Game
     paginate_by = 10
@@ -34,7 +34,7 @@ class BrowseGamesView(LoginRequiredMixin, ListView):
 
 
 class RequestGamesView(LoginRequiredMixin, ListView):
-    template_name = 'games/request_games.html'
+    template_name = 'games/list/request_games.html'
     context_object_name = 'games'
     paginate_by = 10
 
@@ -86,8 +86,12 @@ class RequestGamesView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['name'] = self.request.GET.get('name', '')
-        context['name_type'] = self.request.GET.get('name_type', 'all')
+        name = self.request.GET.get('name', '')
+        name_type = self.request.GET.get('name_type', 'all')
+
+        context['name'] = name
+        context['name_type'] = name_type
+        context['querystring'] = f'name={name}&name_type={name_type}&'
 
         page_games = context['object_list']
         if page_games:

@@ -7,7 +7,7 @@ from ..models import Game
 
 
 class RequestedGamesView(LoginRequiredMixin, ListView):
-    template_name = 'games/requested_games.html'
+    template_name = 'games/list/browse_requested.html'
     context_object_name = 'games'
     model = Game
     paginate_by = 10
@@ -20,7 +20,7 @@ class RequestedGamesView(LoginRequiredMixin, ListView):
 
 
 class AcceptedGamesView(LoginRequiredMixin, ListView):
-    template_name = 'games/accepted_games.html'
+    template_name = 'games/list/browse_accepted.html'
     context_object_name = 'games'
     model = Game
     paginate_by = 10
