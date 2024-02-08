@@ -1,6 +1,6 @@
 from .browse import (
-    BrowseGamesView,
-    RequestGamesView,
+    SupportedGamesView,
+    UnsupportedGamesView,
 )
 from .details import (
     GameDetailViewBGG,

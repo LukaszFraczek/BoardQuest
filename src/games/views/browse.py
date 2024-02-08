@@ -8,7 +8,7 @@ from typing import Dict, List
 from icecream import ic
 
 
-class BrowseGamesView(LoginRequiredMixin, ListView):
+class SupportedGamesView(LoginRequiredMixin, ListView):
     template_name = 'games/browse/supported.html'
     context_object_name = 'games'
     model = Game
@@ -33,7 +33,7 @@ class BrowseGamesView(LoginRequiredMixin, ListView):
         return context
 
 
-class RequestGamesView(LoginRequiredMixin, ListView):
+class UnsupportedGamesView(LoginRequiredMixin, ListView):
     template_name = 'games/browse/unsupported.html'
     context_object_name = 'games'
     paginate_by = 10

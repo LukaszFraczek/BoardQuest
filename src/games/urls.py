@@ -1,8 +1,8 @@
 from django.urls import path, include
 
 from .views import (
-    BrowseGamesView,
-    RequestGamesView,
+    SupportedGamesView,
+    UnsupportedGamesView,
     RequestedGamesView,
     AcceptedGamesView,
     GameDetailView,
@@ -24,8 +24,8 @@ URL_PREFIX = 'games/'
 
 
 patterns = [
-    path('browse/', BrowseGamesView.as_view(), name='browse_games'),
-    path('request/', RequestGamesView.as_view(), name='request_games'),
+    path('browse/', SupportedGamesView.as_view(), name='supported_games'),
+    path('unsupported/', UnsupportedGamesView.as_view(), name='unsupported_games'),
     path('<int:pk>/', GameDetailView.as_view(), name='details'),
     path('bgg-item/<int:bgg_id>/', GameDetailViewBGG.as_view(), name='details_bgg'),
     path('request/create/new-game', CreateRequestNewGameView.as_view(), name='request_create_new'),
