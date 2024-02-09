@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -157,7 +157,9 @@ class CancelRequestView(LoginRequiredMixin, View):
         return HttpResponseRedirect(next_url)
 
 
-class AcceptRequestView(LoginRequiredMixin, View):
+class AcceptRequestView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'games.accept_game_request'
+
     def post(self, request):
         form = RequestAcceptForm(request.POST)
         redirect_url = 'games:accepted_games'

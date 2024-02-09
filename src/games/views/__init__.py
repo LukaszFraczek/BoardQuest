@@ -23,3 +23,22 @@ from .collection import (
     GameCollectionAddView,
     GameCollectionRemoveView,
 )
+
+
+__all__ = [
+    'SupportedGamesView',
+    'UnsupportedGamesView',
+    'RequestedGamesView',
+    'AcceptedGamesView',
+    'GameDetailView',
+    'GameDetailViewBGG',
+    'CreateRequestExistingGameView',
+    'CreateRequestNewGameView',
+    'UpdateRequestView',
+    'CancelRequestView',
+    'AcceptRequestView',
+    'UpdateGameView',
+    'GameCollectionView',
+    'GameCollectionAddView',
+    'GameCollectionRemoveView',
+]

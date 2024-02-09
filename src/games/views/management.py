@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView
 
@@ -6,7 +6,8 @@ from ..forms import GameUpdateForm
 from ..models import Game
 
 
-class RequestedGamesView(LoginRequiredMixin, ListView):
+class RequestedGamesView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'games.view_game'
     template_name = 'games/browse/requested.html'
     context_object_name = 'games'
     model = Game
@@ -19,7 +20,8 @@ class RequestedGamesView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class AcceptedGamesView(LoginRequiredMixin, ListView):
+class AcceptedGamesView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'games.view_game'
     template_name = 'games/browse/accepted.html'
     context_object_name = 'games'
     model = Game
@@ -32,14 +34,15 @@ class AcceptedGamesView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class UpdateGameView(LoginRequiredMixin, UpdateView):
+class UpdateGameView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     ALLOWED_STATUSES = (
         Game.Status.ACCEPTED,
         Game.Status.SUPPORTED,
     )
 
-    model = Game
+    permission_required = 'games.change_game'
     template_name = 'games/update.html'
+    model = Game
     form_class = GameUpdateForm
     success_url = reverse_lazy('games:accepted_games')
 

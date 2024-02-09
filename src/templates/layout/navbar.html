@@ -44,15 +44,17 @@
                     <a class="dropdown-item" href="#">Rankings</a>  <!-- TODO -->
                 </div>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                    Manage
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'games:requested_games' %}">Requested games</a>
-                    <a class="dropdown-item" href="{% url 'games:accepted_games' %}">Accepted games</a>
-                </div>
-            </li>
+                {% if groups.moderators.name in user_groups or groups.administrators.name in user_groups%}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Manage
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'games:requested_games' %}">Requested games</a>
+                        <a class="dropdown-item" href="{% url 'games:accepted_games' %}">Accepted games</a>
+                    </div>
+                </li>
+                {% endif %}
             {% endif %}
         </ul>
 

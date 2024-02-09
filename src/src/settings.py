@@ -75,6 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'src.context_processors.groups_processor',
+                'src.context_processors.user_groups_processor',
             ],
         },
     },
@@ -162,6 +164,8 @@ BGG_API_URL = 'https://www.boardgamegeek.com/xmlapi2'
 
 BGG_GAME_DETAIL_URL = 'https://boardgamegeek.com/boardgame/'
 
-SEARCH_CACHE_PERSISTENCE = 900
+SEARCH_CACHE_PERSISTENCE = 900  # 15 minutes
 
-DETAILS_CACHE_PERSISTENCE = 900
+DETAILS_CACHE_PERSISTENCE = 900  # 15 minutes
+
+GROUP_CACHE_PERSISTENCE = 3600  # 1 hour

@@ -89,12 +89,15 @@ class GameRequest(models.Model):
             )
         ]
 
+        permissions = [
+            ('accept_game_request', 'Can accept game request'),
+        ]
+
     def __str__(self):
         return f"Request to add {self.game}"
 
     def accept(self) -> bool:
         """Accept request to add a game to game library"""
-
         try:
             with transaction.atomic():
                 self.game.status = Game.Status.ACCEPTED
