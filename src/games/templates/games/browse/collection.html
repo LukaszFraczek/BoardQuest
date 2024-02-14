@@ -1,0 +1,22 @@
+{% extends 'games/browse/common.html' %}
+{% load static %}
+
+{% block title %}
+    Collection
+{% endblock title %}
+
+{% block page_heading %}
+    {% if collection_user == request.user %}
+        My Collection
+    {% else %}
+        {{ collection_user.username }}'s Collection
+    {% endif %}
+{% endblock page_heading %}
+
+{% block results_empty %}
+    <div class="col-12 text-center">
+        <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">
+            No games in collection!
+        </h2>
+    </div>
+{% endblock results_empty %}

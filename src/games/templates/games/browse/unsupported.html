@@ -1,0 +1,139 @@
+{% extends 'games/browse/common.html' %}
+{% load static %}
+
+{% block title %}
+    Request games
+{% endblock title %}
+
+{% block styles %}
+<style>
+    .mark-requested, .mark-accepted, .mark-supported {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mark-requested::before, .mark-accepted::before, .mark-supported::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10%;
+        height: 100%;
+        transform: skew(45deg);
+        transform-origin: top right;
+        z-index: 0;
+    }
+
+    .mark-requested::before {
+        background-color: #ffdf4f;
+    }
+    .mark-accepted::before {
+        background-color: #10bd0e;
+    }
+    .mark-supported::before {
+        background-color: #158bea;
+    }
+
+    .tooltip-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10%;
+        height: 50%;
+        transform-origin: top;
+        z-index: 1; /* Place the tooltip container above the slanted section */
+    }
+
+    .tooltip-inner {
+        background-color: #addaff;
+        color: #000000; /* text color */
+        text-align: center;
+        border-radius: 5px;
+    }
+    .tooltip.bs-tooltip-bottom .arrow:before {
+        border-bottom-color: #addaff !important;
+    }
+    .tooltip.bs-tooltip-top .arrow:before {
+        border-top-color: #addaff !important;
+    }
+
+</style>
+{% endblock styles %}
+
+{% block page_heading %}
+    Request games
+{% endblock page_heading %}
+
+{% block searchbar %}
+    <div class="row mb-4">
+        <form method="get" action="{% url 'games:unsupported_games' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
+            <div class="input-group">
+                <input type="text" name="name" id="name" value="{{ name }}" class="form-control bg-white border-2 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <select name="name_type" class="form-control">
+                    <option value="all">All</option>
+                    <option value="primary">Primary</option>
+                    <option value="alternate">Alternate</option>
+                </select>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock searchbar %}
+
+{% block results %}
+    <div class="row align-items-stretch">
+        {% for game in games %}
+            {% if forloop.counter0|divisibleby:2 %}
+                </div><div class="row align-items-stretch">
+            {% endif %}
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                <!-- Game Info -->
+                <div class="card shadow h-100
+                    {% if game.status == 'Req' %}mark-requested
+                    {% elif game.status == 'Acc' %}mark-accepted
+                    {% elif game.status == 'Sup' %}mark-supported
+                    {% endif %}">
+                    <div class="card-body d-flex flex-column m-1">
+                        <a href="
+                            {% if game.status %} {% url 'games:details' game.id %}
+                            {% else %} {% url 'games:details_bgg' game.bgg_id %}
+                            {% endif %}">
+                            <h5 class="mb-2 font-weight-bold text-primary text-truncate flex-fill">{{ game.name }}</h5>
+                            {% if game.release_year != '0' %}
+                                <h6 class="mb-2 text-secondary text-truncate flex-fill">{{ game.release_year }}</h6>
+                            {% else %}
+                                <h6 class="mb-2 text-secondary text-truncate flex-fill">Unknown release date</h6>
+                            {% endif %}
+                        </a>
+                        {% if game.status %}
+                        <div class="tooltip-container" data-toggle="tooltip" data-placement="top"
+                            {% if game.status == 'Req' %} title="This game is requested to be added by community!"
+                            {% elif game.status == 'Acc' %} title="Request to add this game was accepted. Coming soon!"
+                            {% elif game.status == 'Sup' %} title="This game is already supported!"
+                            {% endif %}>&nbsp;</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">
+                No results found!
+            </h2>
+        {% endfor %}
+    </div>
+{% endblock results %}
+
+{% block script %}
+<script>
+    // Enable Bootstrap tooltips only on slanted section
+    $(document).ready(function(){
+        $('.mark-supported [data-toggle="tooltip"]').tooltip();
+        $('.mark-accepted [data-toggle="tooltip"]').tooltip();
+        $('.mark-requested [data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock script %}

@@ -1,0 +1,19 @@
+{% extends 'games/browse/common.html' %}
+{% load static %}
+
+{% block title %}
+    Accepted games
+{% endblock title %}
+
+{% block page_heading %}
+    Accepted games
+{% endblock page_heading %}
+
+{% block results_empty %}
+    <div class="col-12 text-center">
+        <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">
+            No games to process!
+        </h2>
+    </div>
+{% endblock results_empty %}
+

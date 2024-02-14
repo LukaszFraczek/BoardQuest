@@ -1,0 +1,37 @@
+{% extends 'games/browse/common.html' %}
+{% load static %}
+
+{% block title %}
+    Browse games
+{% endblock title %}
+
+{% block page_heading %}
+    Browse games
+{% endblock page_heading %}
+
+{% block searchbar %}
+    <div class="row mb-4">
+        <form method="get" action="{% url 'games:supported_games' %}" class="mr-auto ml-3 my-2 my-md-0 navbar-search">
+            <div class="input-group">
+                <input type="text" name="name" id="name" value="{{ name }}" class="form-control bg-white border-2 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock searchbar %}
+
+{% block results_empty %}
+    <div class="col-12 text-center">
+        <h2 class="mb-2 font-weight-bold text-primary text-center text-truncate flex-fill">
+            No results found?
+        </h2>
+        <div class="my-2"></div>
+        <a class="btn btn-primary" href="{% url 'games:request_games' %}?name={{ name }}">
+            <span class="text text-truncate">Try requesting your game!</span>
+        </a>
+    </div>
+{% endblock results_empty %}

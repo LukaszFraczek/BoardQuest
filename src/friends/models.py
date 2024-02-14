@@ -63,19 +63,31 @@ class FriendList(models.Model):
 #     since = models.DateTimeField(auto_now_add=timezone.now)
 
 
+class InvitationStatus(models.TextChoices):
+    ACCEPTED = "Acc", _("Accepted")
+    DECLINED = "Dec", _("Declined")
+    CANCELLED = "Cld", _("Cancelled")
+    PENDING = "Pdg", _("Pending")
+
+
 class FriendInvitation(models.Model):
     """Model representing an invitation to friend list"""
 
-    class Status(models.TextChoices):
-        ACCEPTED = "Acc", _("Accepted")
-        DECLINED = "Dec", _("Declined")
-        CANCELLED = "Cld", _("Cancelled")
-        PENDING = "Pdg", _("Pending")
+    Status = InvitationStatus
 
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
     sent_at = models.DateTimeField(auto_now_add=timezone.now)
     status = models.CharField(max_length=3, choices=Status.choices, default=Status.PENDING, null=False, blank=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sender', 'receiver'],
+                name='unique_pending_invitation',
+                condition=models.Q(status=InvitationStatus.PENDING)
+            )
+        ]
 
     def __str__(self):
         return f"Friend invitation from {self.sender} to {self.receiver}"

@@ -1,8 +1,3 @@
-"""
-URL configuration for src project.
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-"""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -14,6 +9,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('homepage.urls')),
     path('', include('friends.urls')),
+    path('', include('games.urls')),
 ]
 
 handler404 = 'homepage.views.handling_404'
